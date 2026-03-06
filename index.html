@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Etki Komün — Düşüncenin Buluşma Noktası</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f0e0c;
+      --cream: #f5f0e8;
+      --gold: #c9a84c;
+      --gold-light: #e8c96e;
+      --teal: #2a7f6f;
+      --teal-light: #3db89e;
+      --indigo: #3d3580;
+      --violet: #6b5cc4;
+      --earth: #8b6a42;
+      --earth-light: #b8906a;
+      --mist: #e8e2d8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(245,240,232,0.88); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201,168,76,0.2);
+      transition: box-shadow 0.3s;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900;
+      letter-spacing: -0.02em; color: var(--ink); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-logo .dot { width: 8px; height: 8px; background: var(--teal); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(1.3); } }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink); text-decoration: none; opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s; position: relative;
+    }
+    .nav-links a::after { content:''; position:absolute; bottom:-3px; left:0; right:0; height:1.5px; background:var(--gold); transform:scaleX(0); transition:transform 0.3s ease; }
+    .nav-links a:hover { opacity:1; color:var(--teal); }
+    .nav-links a:hover::after { transform:scaleX(1); }
+    .nav-cta {
+      font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.6rem 1.4rem; background: var(--ink); color: var(--cream);
+      border: none; cursor: pointer; transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--teal); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center; padding: 8rem 4rem 4rem; position: relative; overflow: hidden;
+    }
+    .hero-bg-shapes { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+    .shape { position:absolute; border-radius:50%; filter:blur(80px); opacity:0.18; }
+    .shape-1 { width:500px; height:500px; background:var(--violet); top:-100px; right:-100px; animation:drift1 12s ease-in-out infinite alternate; }
+    .shape-2 { width:400px; height:400px; background:var(--teal); bottom:-50px; left:200px; animation:drift2 15s ease-in-out infinite alternate; }
+    .shape-3 { width:300px; height:300px; background:var(--gold); top:200px; left:-80px; animation:drift1 10s ease-in-out infinite alternate-reverse; }
+    @keyframes drift1 { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,30px) scale(1.1)} }
+    @keyframes drift2 { from{transform:translate(0,0) scale(1)} to{transform:translate(-30px,-40px) scale(0.95)} }
+    .hero-left { position:relative; z-index:1; animation:fadeUp 1s ease forwards; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+    .hero-eyebrow {
+      font-family:'Space Mono',monospace; font-size:0.72rem; letter-spacing:0.2em; text-transform:uppercase;
+      color:var(--teal); margin-bottom:1.5rem; display:flex; align-items:center; gap:0.8rem;
+    }
+    .hero-eyebrow::before { content:''; display:inline-block; width:32px; height:1.5px; background:var(--teal); }
+    .hero-title { font-family:'Playfair Display',serif; font-size:clamp(3.5rem,6vw,5.5rem); font-weight:900; line-height:1.0; letter-spacing:-0.03em; margin-bottom:0.3rem; }
+    .hero-title em { font-style:italic; color:var(--gold); }
+    .hero-title .accent-line { display:block; -webkit-text-stroke:2px var(--teal); color:transparent; }
+    .hero-subtitle { font-size:1.1rem; line-height:1.75; color:rgba(15,14,12,0.65); max-width:480px; margin:1.8rem 0 2.5rem; }
+    .hero-actions { display:flex; gap:1rem; align-items:center; }
+    .btn-primary {
+      padding:0.9rem 2.2rem; background:var(--teal); color:white; font-family:'Space Mono',monospace;
+      font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; border:none; cursor:pointer;
+      transition:background 0.25s, transform 0.2s; text-decoration:none; display:inline-block;
+    }
+    .btn-primary:hover { background:var(--indigo); transform:translateY(-2px); }
+    .btn-ghost {
+      padding:0.9rem 2.2rem; background:transparent; color:var(--ink); font-family:'Space Mono',monospace;
+      font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; border:1.5px solid rgba(15,14,12,0.25);
+      cursor:pointer; transition:border-color 0.2s, color 0.2s; text-decoration:none; display:inline-block;
+    }
+    .btn-ghost:hover { border-color:var(--gold); color:var(--gold); }
+    .hero-right { position:relative; z-index:1; display:flex; justify-content:center; align-items:center; animation:fadeUp 1s 0.3s ease both; }
+    .hero-visual { width:420px; height:420px; position:relative; }
+    .orb-outer {
+      width:100%; height:100%;
+      border-radius:60% 40% 55% 45% / 45% 55% 45% 55%;
+      background:conic-gradient(from 180deg at 50% 50%, var(--indigo) 0deg, var(--violet) 72deg, var(--teal) 144deg, var(--gold) 216deg, var(--earth) 288deg, var(--indigo) 360deg);
+      animation:morphOrb 10s ease-in-out infinite alternate, spinSlow 25s linear infinite;
+      opacity:0.85; position:relative; display:flex; align-items:center; justify-content:center;
+    }
+    @keyframes morphOrb {
+      0% { border-radius:60% 40% 55% 45% / 45% 55% 45% 55%; }
+      50% { border-radius:40% 60% 45% 55% / 55% 45% 55% 45%; }
+      100% { border-radius:55% 45% 60% 40% / 40% 60% 40% 60%; }
+    }
+    @keyframes spinSlow { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .orb-inner {
+      position:absolute; width:75%; height:75%; background:var(--cream); border-radius:50%;
+      display:flex; align-items:center; justify-content:center; flex-direction:column;
+      animation:spinSlow 25s linear infinite reverse;
+    }
+    .orb-text { font-family:'Playfair Display',serif; font-size:2.8rem; font-weight:900; color:var(--ink); line-height:1; text-align:center; }
+    .orb-text span { display:block; font-size:0.8rem; font-family:'Space Mono',monospace; letter-spacing:0.15em; text-transform:uppercase; color:var(--teal); margin-top:0.4rem; }
+
+    /* MARQUEE */
+    .marquee-bar { background:var(--ink); padding:1rem 0; overflow:hidden; white-space:nowrap; }
+    .marquee-track { display:inline-block; animation:marquee 20s linear infinite; }
+    .marquee-item { display:inline-block; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--cream); opacity:0.7; margin:0 2.5rem; }
+    .marquee-item.accent { color:var(--gold); opacity:1; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* SECTIONS */
+    section { padding: 6rem 4rem; }
+    .section-tag { font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--teal); margin-bottom:1rem; display:flex; align-items:center; gap:0.8rem; }
+    .section-tag::before { content:''; display:inline-block; width:24px; height:1.5px; background:var(--teal); }
+    .section-title { font-family:'Playfair Display',serif; font-size:clamp(2.2rem,4vw,3.2rem); font-weight:700; line-height:1.15; letter-spacing:-0.02em; }
+
+    /* ABOUT */
+    #about { background:var(--ink); color:var(--cream); display:grid; grid-template-columns:1fr 1.2fr; gap:5rem; align-items:center; }
+    #about .section-tag { color:var(--gold-light); }
+    #about .section-tag::before { background:var(--gold-light); }
+    #about .section-title { color:var(--cream); }
+    .about-body { font-size:1.05rem; line-height:1.85; color:rgba(245,240,232,0.72); margin-top:1.5rem; }
+    .about-body strong { color:var(--gold-light); font-weight:500; }
+    .about-stats { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+    .stat-box { padding:1.8rem; border:1px solid rgba(245,240,232,0.1); position:relative; overflow:hidden; transition:border-color 0.3s; }
+    .stat-box:hover { border-color:var(--gold); }
+    .stat-box::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background:linear-gradient(to bottom, var(--gold), var(--teal)); }
+    .stat-number { font-family:'Playfair Display',serif; font-size:3rem; font-weight:900; color:var(--gold); line-height:1; }
+    .stat-label { font-family:'Space Mono',monospace; font-size:0.68rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-top:0.4rem; }
+
+    /* TOPICS */
+    #topics { background:var(--cream); }
+    .topics-header { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:3.5rem; }
+    .topics-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; }
+    .topic-card { padding:2.5rem 2rem; border:1.5px solid var(--mist); background:white; position:relative; cursor:pointer; transition:transform 0.3s, border-color 0.3s, box-shadow 0.3s; overflow:hidden; }
+    .topic-card:hover { transform:translateY(-6px); border-color:transparent; box-shadow:0 20px 60px rgba(0,0,0,0.1); }
+    .topic-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; opacity:0; transition:opacity 0.3s; }
+    .topic-card:hover::after { opacity:1; }
+    .topic-card:nth-child(1)::after { background:var(--violet); }
+    .topic-card:nth-child(2)::after { background:var(--teal); }
+    .topic-card:nth-child(3)::after { background:var(--gold); }
+    .topic-card:nth-child(4)::after { background:var(--earth); }
+    .topic-icon { font-size:2.5rem; margin-bottom:1.2rem; display:block; transition:transform 0.3s; }
+    .topic-card:hover .topic-icon { transform:scale(1.15) rotate(-5deg); }
+    .topic-name { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:700; margin-bottom:0.8rem; }
+    .topic-desc { font-size:0.9rem; line-height:1.7; color:rgba(15,14,12,0.6); }
+    .topic-count { font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.15em; text-transform:uppercase; margin-top:1.5rem; display:flex; align-items:center; gap:0.5rem; }
+    .topic-card:nth-child(1) .topic-count { color:var(--violet); }
+    .topic-card:nth-child(2) .topic-count { color:var(--teal); }
+    .topic-card:nth-child(3) .topic-count { color:var(--gold); }
+    .topic-card:nth-child(4) .topic-count { color:var(--earth); }
+
+    /* POSTS */
+    #posts { background:var(--mist); }
+    .posts-grid { display:grid; grid-template-columns:1.6fr 1fr 1fr; grid-template-rows:auto auto; gap:1.5rem; margin-top:3rem; }
+    .post-card { background:white; overflow:hidden; cursor:pointer; transition:transform 0.3s, box-shadow 0.3s; border:1.5px solid rgba(0,0,0,0.05); }
+    .post-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(0,0,0,0.1); }
+    .post-card.featured { grid-row:1/3; }
+    .post-img { height:200px; position:relative; overflow:hidden; }
+    .post-card.featured .post-img { height:320px; }
+    .post-img-bg { width:100%; height:100%; transition:transform 0.5s ease; }
+    .post-card:hover .post-img-bg { transform:scale(1.05); }
+    .post-body { padding:1.8rem; }
+    .post-card.featured .post-body { padding:2.2rem; }
+    .post-category { font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.18em; text-transform:uppercase; padding:0.3rem 0.8rem; border-radius:2px; display:inline-block; margin-bottom:1rem; }
+    .cat-felsefe { background:rgba(107,92,196,0.12); color:var(--violet); }
+    .cat-bilim { background:rgba(42,127,111,0.12); color:var(--teal); }
+    .cat-sanat { background:rgba(201,168,76,0.12); color:var(--earth); }
+    .cat-politika { background:rgba(61,53,128,0.12); color:var(--indigo); }
+    .post-title { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700; line-height:1.35; margin-bottom:0.8rem; transition:color 0.2s; }
+    .post-card.featured .post-title { font-size:1.6rem; }
+    .post-card:hover .post-title { color:var(--teal); }
+    .post-excerpt { font-size:0.88rem; line-height:1.7; color:rgba(15,14,12,0.6); margin-bottom:1.2rem; }
+    .post-meta { display:flex; align-items:center; justify-content:space-between; font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.08em; color:rgba(15,14,12,0.4); }
+    .post-read-time { color:var(--teal); }
+
+    /* CONTACT */
+    #contact { background:var(--ink); color:var(--cream); display:grid; grid-template-columns:1fr 1fr; gap:6rem; align-items:start; }
+    #contact .section-tag { color:var(--teal-light); }
+    #contact .section-tag::before { background:var(--teal-light); }
+    #contact .section-title { color:var(--cream); }
+    .contact-sub { margin-top:1.2rem; font-size:1rem; line-height:1.8; color:rgba(245,240,232,0.6); }
+    .contact-links { margin-top:2.5rem; display:flex; flex-direction:column; gap:1rem; }
+    .contact-link-item { display:flex; align-items:center; gap:1rem; padding:1.2rem 1.5rem; border:1px solid rgba(245,240,232,0.1); cursor:pointer; transition:border-color 0.2s, background 0.2s; text-decoration:none; color:var(--cream); }
+    .contact-link-item:hover { border-color:var(--teal-light); background:rgba(61,184,158,0.06); }
+    .contact-link-icon { width:36px; height:36px; display:flex; align-items:center; justify-content:center; background:rgba(245,240,232,0.07); font-size:1rem; flex-shrink:0; }
+    .contact-link-info strong { display:block; font-family:'Space Mono',monospace; font-size:0.7rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--teal-light); }
+    .contact-link-info span { font-size:0.9rem; color:rgba(245,240,232,0.7); }
+    .contact-form-area { padding-top:0.5rem; }
+    .form-group { margin-bottom:1.5rem; }
+    .form-label { display:block; font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.5); margin-bottom:0.6rem; }
+    .form-input, .form-textarea { width:100%; padding:0.9rem 1.2rem; background:rgba(245,240,232,0.05); border:1px solid rgba(245,240,232,0.12); color:var(--cream); font-family:'DM Sans',sans-serif; font-size:0.95rem; outline:none; transition:border-color 0.2s; resize:none; }
+    .form-input:focus, .form-textarea:focus { border-color:var(--teal-light); }
+    .form-input::placeholder, .form-textarea::placeholder { color:rgba(245,240,232,0.25); }
+    .form-textarea { height:120px; }
+    .form-submit { width:100%; padding:1rem; background:var(--teal); color:white; border:none; font-family:'Space Mono',monospace; font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; cursor:pointer; transition:background 0.25s; }
+    .form-submit:hover { background:var(--teal-light); }
+
+    /* FOOTER */
+    footer { background:#080807; padding:3rem 4rem; display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(245,240,232,0.06); }
+    .footer-logo { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; color:var(--cream); opacity:0.6; }
+    .footer-logo span { color:var(--gold); opacity:1; }
+    .footer-copy { font-family:'Space Mono',monospace; font-size:0.65rem; letter-spacing:0.1em; color:rgba(245,240,232,0.3); }
+    .footer-socials { display:flex; gap:1rem; }
+    .footer-social-btn { width:36px; height:36px; border:1px solid rgba(245,240,232,0.15); display:flex; align-items:center; justify-content:center; font-size:0.85rem; color:rgba(245,240,232,0.5); cursor:pointer; transition:border-color 0.2s, color 0.2s; text-decoration:none; }
+    .footer-social-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+    /* REVEAL */
+    .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* RESPONSIVE */
+    @media (max-width:1024px) {
+      nav { padding:1.2rem 2rem; }
+      section { padding:5rem 2rem; }
+      #hero { grid-template-columns:1fr; padding:8rem 2rem 4rem; text-align:center; }
+      .hero-right { display:none; }
+      .hero-eyebrow { justify-content:center; }
+      .hero-actions { justify-content:center; }
+      .hero-subtitle { margin-left:auto; margin-right:auto; }
+      #about { grid-template-columns:1fr; gap:3rem; }
+      .topics-grid { grid-template-columns:1fr 1fr; }
+      .posts-grid { grid-template-columns:1fr; }
+      .post-card.featured { grid-row:auto; }
+      #contact { grid-template-columns:1fr; gap:3rem; }
+      footer { flex-direction:column; gap:1.5rem; text-align:center; }
+      .topics-header { flex-direction:column; align-items:flex-start; gap:1rem; }
+    }
+    @media (max-width:640px) {
+      .nav-links { display:none; }
+      .topics-grid { grid-template-columns:1fr; }
+      .about-stats { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">Etki<span>Komün</span>&nbsp;<span class="dot"></span></a>
+    <ul class="nav-links">
+      <li><a href="#about">Hakkımızda</a></li>
+      <li><a href="#topics">Konular</a></li>
+      <li><a href="#posts">Yazılar</a></li>
+      <li><a href="#contact">İletişim</a></li>
+    </ul>
+    <button class="nav-cta">Abone Ol</button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+    <div class="hero-left">
+      <p class="hero-eyebrow">Düşüncenin Buluşma Noktası</p>
+      <h1 class="hero-title">
+        <em>Etki</em><br>
+        <span class="accent-line">Komün</span>
+      </h1>
+      <p class="hero-subtitle">Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler. Hayatın her katmanına dair derinlemesine analizler, sorular ve tartışmalar.</p>
+      <div class="hero-actions">
+        <a href="#posts" class="btn-primary">Yazıları Keşfet</a>
+        <a href="#about" class="btn-ghost">Biz Kimiz?</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual">
+        <div class="orb-outer">
+          <div class="orb-inner">
+            <div class="orb-text">EK<span>Etki Komün</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-bar">
+    <div class="marquee-track">
+      <span class="marquee-item accent">● Bilim</span><span class="marquee-item">Felsefe</span><span class="marquee-item accent">● Sanat</span><span class="marquee-item">Politika</span><span class="marquee-item accent">● Kültür</span><span class="marquee-item">Teknoloji</span><span class="marquee-item accent">● Toplum</span><span class="marquee-item">Etik</span><span class="marquee-item accent">● Tarih</span><span class="marquee-item">Ekonomi</span><span class="marquee-item accent">● Edebiyat</span><span class="marquee-item">Psikoloji</span>
+      <span class="marquee-item accent">● Bilim</span><span class="marquee-item">Felsefe</span><span class="marquee-item accent">● Sanat</span><span class="marquee-item">Politika</span><span class="marquee-item accent">● Kültür</span><span class="marquee-item">Teknoloji</span><span class="marquee-item accent">● Toplum</span><span class="marquee-item">Etik</span><span class="marquee-item accent">● Tarih</span><span class="marquee-item">Ekonomi</span><span class="marquee-item accent">● Edebiyat</span><span class="marquee-item">Psikoloji</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="reveal">
+      <p class="section-tag">Biz Kimiz</p>
+      <h2 class="section-title">Bağımsız Sesler,<br>Cesur Fikirler</h2>
+      <p class="about-body">
+        <strong>Etki Komün</strong>, ideolojik körlüğe direnen, merak etmeyi seven bir yazarlar topluluğudur.
+        Bilimin metodolojisinden felsefenin derinliklerine, sanatın dönüştürücü gücünden politikanın
+        karmaşık dokusuna kadar <strong>hayatın her katmanını</strong> masaya yatırıyoruz.<br><br>
+        Amacımız basit: Düşünmek, sormak ve <strong>etki bırakmak</strong>. Herhangi bir dogmaya bağlı kalmadan, ama sorumlulukla.
+      </p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-box"><div class="stat-number">4</div><div class="stat-label">Ana Konu Alanı</div></div>
+      <div class="stat-box"><div class="stat-number">∞</div><div class="stat-label">Soru & Tartışma</div></div>
+      <div class="stat-box"><div class="stat-number">1</div><div class="stat-label">Ortak İdeoloji</div></div>
+      <div class="stat-box"><div class="stat-number">0</div><div class="stat-label">Tabu Konu</div></div>
+    </div>
+  </section>
+
+  <!-- TOPICS -->
+  <section id="topics">
+    <div class="topics-header">
+      <div class="reveal">
+        <p class="section-tag">Konu Alanları</p>
+        <h2 class="section-title">Neyi Tartışıyoruz?</h2>
+      </div>
+      <a href="#posts" class="btn-ghost reveal" style="white-space:nowrap">Tüm Yazılar →</a>
+    </div>
+    <div class="topics-grid">
+      <div class="topic-card reveal">
+        <span class="topic-icon">🔬</span>
+        <div class="topic-name">Bilim</div>
+        <p class="topic-desc">Evrenin işleyişini anlamlandırma çabası. Metodoloji, keşifler ve bilimin sınırları.</p>
+        <div class="topic-count">→ Araştırma & Analiz</div>
+      </div>
+      <div class="topic-card reveal" style="transition-delay:0.1s">
+        <span class="topic-icon">⚖️</span>
+        <div class="topic-name">Felsefe</div>
+        <p class="topic-desc">Varoluşun, ahlakın ve bilginin temel sorularıyla yüzleşmek.</p>
+        <div class="topic-count">→ Soru & Tartışma</div>
+      </div>
+      <div class="topic-card reveal" style="transition-delay:0.2s">
+        <span class="topic-icon">🎨</span>
+        <div class="topic-name">Sanat & Kültür</div>
+        <p class="topic-desc">İfade biçimleri, estetik ve toplumu dönüştüren yaratıcı güç.</p>
+        <div class="topic-count">→ Eleştiri & Yorum</div>
+      </div>
+      <div class="topic-card reveal" style="transition-delay:0.3s">
+        <span class="topic-icon">🏛️</span>
+        <div class="topic-name">Politika</div>
+        <p class="topic-desc">İktidar, toplum sözleşmesi ve geleceği şekillendiren kararlar.</p>
+        <div class="topic-count">→ Görüş & Analiz</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- POSTS -->
+  <section id="posts">
+    <p class="section-tag reveal">Öne Çıkanlar</p>
+    <h2 class="section-title reveal">Son Yazılar</h2>
+    <div class="posts-grid">
+      <div class="post-card featured reveal">
+        <div class="post-img"><div class="post-img-bg" style="background:linear-gradient(135deg,#3d3580 0%,#6b5cc4 40%,#2a7f6f 100%);"></div></div>
+        <div class="post-body">
+          <span class="post-category cat-felsefe">Felsefe</span>
+          <h3 class="post-title">Özgür İrade Yanılsaması: Nörobilim Determinizmi Nasıl Yeniden Çerçeveliyor?</h3>
+          <p class="post-excerpt">Kararlarımızı vermeden önce beynimiz zaten karar vermişse, sorumluluk kavramını nasıl yeniden inşa etmeliyiz?</p>
+          <div class="post-meta"><span>12 Şubat 2025</span><span class="post-read-time">12 dk okuma</span></div>
+        </div>
+      </div>
+      <div class="post-card reveal" style="transition-delay:0.1s">
+        <div class="post-img" style="height:140px"><div class="post-img-bg" style="background:linear-gradient(135deg,#2a7f6f,#c9a84c);"></div></div>
+        <div class="post-body">
+          <span class="post-category cat-bilim">Bilim</span>
+          <h3 class="post-title">Kuantum Mekaniği Gerçekliği Nasıl Paramparça Ediyor?</h3>
+          <div class="post-meta"><span>5 Şubat 2025</span><span class="post-read-time">8 dk</span></div>
+        </div>
+      </div>
+      <div class="post-card reveal" style="transition-delay:0.2s">
+        <div class="post-img" style="height:140px"><div class="post-img-bg" style="background:linear-gradient(135deg,#8b6a42,#c9a84c 60%,#e8c96e);"></div></div>
+        <div class="post-body">
+          <span class="post-category cat-sanat">Sanat</span>
+          <h3 class="post-title">Soyut Sanat: Anlamsızlığın Derin Anlamı</h3>
+          <div class="post-meta"><span>28 Ocak 2025</span><span class="post-read-time">6 dk</span></div>
+        </div>
+      </div>
+      <div class="post-card reveal" style="transition-delay:0.15s">
+        <div class="post-img" style="height:140px"><div class="post-img-bg" style="background:linear-gradient(135deg,#3d3580 0%,#2a7f6f);"></div></div>
+        <div class="post-body">
+          <span class="post-category cat-politika">Politika</span>
+          <h3 class="post-title">Popülizm: Demokrasinin Gölgesindeki Tehlike</h3>
+          <div class="post-meta"><span>20 Ocak 2025</span><span class="post-read-time">10 dk</span></div>
+        </div>
+      </div>
+      <div class="post-card reveal" style="transition-delay:0.25s">
+        <div class="post-img" style="height:140px"><div class="post-img-bg" style="background:linear-gradient(135deg,#6b5cc4,#3db89e);"></div></div>
+        <div class="post-body">
+          <span class="post-category cat-bilim">Bilim</span>
+          <h3 class="post-title">Yapay Zekanın Ahlak Felsefesine Meydan Okuması</h3>
+          <div class="post-meta"><span>14 Ocak 2025</span><span class="post-read-time">9 dk</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="reveal">
+      <p class="section-tag">İletişim</p>
+      <h2 class="section-title">Bize Ulaşın,<br>Tartışmaya Katılın</h2>
+      <p class="contact-sub">Düşüncelerinizi paylaşmak, katkıda bulunmak ya da sadece merhaba demek için kapımız her zaman açık.</p>
+      <div class="contact-links">
+        <a href="mailto:iletisim@etkikomun.com" class="contact-link-item">
+          <div class="contact-link-icon">✉</div>
+          <div class="contact-link-info"><strong>E-posta</strong><span>iletisim@etkikomun.com</span></div>
+        </a>
+        <a href="#" class="contact-link-item">
+          <div class="contact-link-icon">𝕏</div>
+          <div class="contact-link-info"><strong>Twitter / X</strong><span>@etkikomun</span></div>
+        </a>
+        <a href="#" class="contact-link-item">
+          <div class="contact-link-icon">ig</div>
+          <div class="contact-link-info"><strong>Instagram</strong><span>@etkikomun</span></div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form-area reveal" style="transition-delay:0.2s">
+      <div class="form-group"><label class="form-label">Adınız</label><input type="text" class="form-input" placeholder="Adınızı girin" /></div>
+      <div class="form-group"><label class="form-label">E-posta</label><input type="email" class="form-input" placeholder="ornek@mail.com" /></div>
+      <div class="form-group"><label class="form-label">Mesajınız</label><textarea class="form-textarea" placeholder="Düşüncelerinizi yazın..."></textarea></div>
+      <button class="form-submit">Mesaj Gönder →</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">Etki<span>Komün</span></div>
+    <div class="footer-copy">© 2025 Etki Komün — Tüm hakları saklıdır.</div>
+    <div class="footer-socials">
+      <a href="#" class="footer-social-btn">𝕏</a>
+      <a href="#" class="footer-social-btn">ig</a>
+      <a href="#" class="footer-social-btn">yt</a>
+    </div>
+  </footer>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.boxShadow = window.scrollY > 60 ? '0 4px 30px rgba(0,0,0,0.08)' : 'none';
+    });
+  </script>
+</body>
+</html>

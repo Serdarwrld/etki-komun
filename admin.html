@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Etki Komün — Kontrol Merkezi v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════
+   RESET & TOKENS
+═══════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090e; --surface:#111118; --surface2:#181820; --surface3:#1f1f2a; --surface4:#252533;
+  --border:#242433; --border2:#2e2e42; --border3:#383850;
+  --text:#ededf5; --text2:#a0a0be; --text3:#5a5a7a; --text4:#3a3a55;
+  --accent:#c9a84c; --accent2:#e8c96e; --accent3:#f0d98a;
+  --teal:#2a7f6f; --teal2:#3db89e; --teal3:#6ed4c0;
+  --violet:#6b5cc4; --violet2:#8b7de0; --violet3:#b0a4f0;
+  --red:#e05c5c; --red2:#f08080; --green:#4caf82; --green2:#6dd4a0;
+  --blue:#4a7fc4; --orange:#e07840;
+  --sidebar-w:256px; --topbar-h:56px;
+  --radius:6px; --radius2:10px;
+  --shadow:0 4px 24px rgba(0,0,0,0.4); --shadow2:0 8px 40px rgba(0,0,0,0.6);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow-x:hidden;font-size:14px}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:inherit}
+input,textarea,select{font-family:inherit}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+#sidebar{
+  width:var(--sidebar-w);min-height:100vh;background:var(--surface);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;z-index:200;
+}
+.sb-logo{
+  height:var(--topbar-h);padding:0 1.25rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:0.75rem;flex-shrink:0;
+}
+.sb-logomark{
+  width:32px;height:32px;border-radius:var(--radius);flex-shrink:0;
+  background:linear-gradient(135deg,var(--violet),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-weight:800;font-size:0.8rem;color:white;
+}
+.sb-logotxt{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;line-height:1.1}
+.sb-logotxt small{display:block;font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text3);font-weight:400;font-family:'JetBrains Mono',monospace}
+.sb-nav{flex:1;overflow-y:auto;padding:0.75rem 0}
+.sb-section{padding:0.5rem 1rem 0.25rem;font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text4);margin-top:0.25rem}
+.sb-item{
+  display:flex;align-items:center;gap:0.65rem;padding:0.55rem 1rem;
+  color:var(--text3);font-size:0.82rem;transition:all 0.15s;cursor:pointer;
+  border-left:2px solid transparent;position:relative;margin:1px 0;border-radius:0 var(--radius) var(--radius) 0;
+}
+.sb-item:hover{background:var(--surface2);color:var(--text2)}
+.sb-item.active{background:var(--surface3);color:var(--accent);border-left-color:var(--accent)}
+.sb-item .icon{font-size:0.95rem;width:18px;text-align:center;flex-shrink:0}
+.sb-item .lbl{flex:1}
+.sb-badge{font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:0.12rem 0.45rem;border-radius:20px;font-weight:700}
+.sb-badge.warn{background:rgba(224,92,92,0.2);color:var(--red2)}
+.sb-badge.info{background:rgba(74,127,196,0.2);color:#80b4f0}
+.sb-badge.ok{background:rgba(76,175,130,0.2);color:var(--green2)}
+.sb-sub{padding-left:2.85rem;font-size:0.78rem;color:var(--text4);padding-top:0.2rem;padding-bottom:0.2rem;cursor:pointer;transition:color 0.15s;display:block}
+.sb-sub:hover{color:var(--text2)}
+.sb-sub.active{color:var(--teal2)}
+.sb-footer{
+  padding:0.9rem 1rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:0.65rem;flex-shrink:0;
+}
+.sb-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--violet),var(--teal));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:0.72rem;color:white;flex-shrink:0}
+.sb-userinfo{flex:1;min-width:0}
+.sb-username{font-size:0.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.sb-userrole{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--teal2);letter-spacing:0.1em;text-transform:uppercase}
+.sb-logout{color:var(--text3);font-size:0.9rem;transition:color 0.15s;padding:0.2rem}
+.sb-logout:hover{color:var(--red)}
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════ */
+#main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{
+  height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;position:sticky;top:0;z-index:100;flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:0.75rem}
+.breadcrumb{display:flex;align-items:center;gap:0.4rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text3)}
+.breadcrumb span{color:var(--text4)}
+.tb-title{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--text)}
+.topbar-right{display:flex;align-items:center;gap:0.5rem}
+.tb-pill{
+  display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.75rem;
+  border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+  letter-spacing:0.06em;border:1px solid var(--border2);color:var(--text2);
+  background:var(--surface2);cursor:pointer;transition:all 0.15s;
+}
+.tb-pill:hover{border-color:var(--border3);color:var(--text)}
+.tb-pill.primary{background:var(--teal);border-color:var(--teal);color:white}
+.tb-pill.primary:hover{background:var(--teal2);border-color:var(--teal2)}
+.tb-pill.danger{background:rgba(224,92,92,0.12);border-color:rgba(224,92,92,0.3);color:var(--red2)}
+.tb-pill.danger:hover{background:rgba(224,92,92,0.22)}
+.tb-dot{width:7px;height:7px;border-radius:50%}
+.status-online{animation:pulse2 2s infinite}
+@keyframes pulse2{0%,100%{box-shadow:0 0 0 0 rgba(76,175,130,0.4)}50%{box-shadow:0 0 0 5px rgba(76,175,130,0)}}
+
+#content{flex:1;padding:1.5rem;overflow-y:auto}
+
+/* ═══════════════════════════════════════════
+   PANELS
+═══════════════════════════════════════════ */
+.panel{display:none;animation:fadeIn 0.2s ease}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ═══════════════════════════════════════════
+   SHARED COMPONENTS
+═══════════════════════════════════════════ */
+.pg-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap}
+.pg-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:700;color:var(--text)}
+.pg-sub{font-size:0.8rem;color:var(--text3);margin-top:0.25rem}
+.btn-row{display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);overflow:hidden}
+.card-hd{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.card-hd-title{font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:0.5rem}
+.card-hd-title .card-icon{font-size:0.9rem}
+.card-body{padding:1.25rem}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem}
+.col-span-2{grid-column:span 2}
+.col-span-3{grid-column:span 3}
+
+/* FORM ELEMENTS */
+.f-row{margin-bottom:1rem}
+.f-row:last-child{margin-bottom:0}
+.f-label{display:block;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:0.35rem}
+.f-input{width:100%;padding:0.6rem 0.85rem;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:0.85rem;outline:none;transition:border-color 0.15s}
+.f-input:focus{border-color:var(--teal2)}
+.f-input::placeholder{color:var(--text4)}
+.f-textarea{width:100%;padding:0.6rem 0.85rem;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:0.85rem;outline:none;transition:border-color 0.15s;resize:vertical;min-height:80px}
+.f-textarea:focus{border-color:var(--teal2)}
+.f-select{width:100%;padding:0.6rem 0.85rem;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:var(--radius);font-size:0.85rem;outline:none;transition:border-color 0.15s;appearance:none;cursor:pointer}
+.f-select:focus{border-color:var(--teal2)}
+.f-select option{background:var(--surface3)}
+.f-hint{font-size:0.72rem;color:var(--text3);margin-top:0.3rem}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:0.85rem 0;border-bottom:1px solid var(--border)}
+.toggle-wrap:last-child{border-bottom:none;padding-bottom:0}
+.toggle-info .t-name{font-size:0.85rem;font-weight:700;color:var(--text)}
+.toggle-info .t-desc{font-size:0.75rem;color:var(--text3);margin-top:0.15rem}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.tslider{position:absolute;cursor:pointer;inset:0;background:var(--surface4);border-radius:22px;transition:0.3s;border:1px solid var(--border3)}
+.tslider:before{content:"";position:absolute;width:16px;height:16px;left:2px;bottom:2px;background:var(--text3);border-radius:50%;transition:0.3s}
+.toggle input:checked+.tslider{background:var(--teal);border-color:var(--teal)}
+.toggle input:checked+.tslider:before{transform:translateX(18px);background:white}
+.toggle input.danger-toggle:checked+.tslider{background:var(--red);border-color:var(--red)}
+
+/* STAT CARDS */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);
+  padding:1.2rem;position:relative;overflow:hidden;
+}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card:nth-child(1)::after{background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.stat-card:nth-child(2)::after{background:linear-gradient(90deg,var(--violet),var(--violet2))}
+.stat-card:nth-child(3)::after{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.stat-card:nth-child(4)::after{background:linear-gradient(90deg,var(--green),var(--green2))}
+.sc-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:0.5rem;display:flex;align-items:center;justify-content:space-between}
+.sc-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text);line-height:1}
+.sc-trend{font-size:0.72rem;color:var(--text3);margin-top:0.3rem;display:flex;align-items:center;gap:0.3rem}
+.sc-trend.up{color:var(--green2)}
+.sc-trend.down{color:var(--red2)}
+.sc-icon{font-size:1.5rem;opacity:0.15;position:absolute;right:1rem;top:50%;transform:translateY(-50%)}
+
+/* BUTTONS */
+.btn{padding:0.55rem 1.1rem;border-radius:var(--radius);font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:0.4rem}
+.btn-primary{background:var(--teal);color:white}.btn-primary:hover{background:var(--teal2)}
+.btn-secondary{background:var(--surface3);color:var(--text2);border:1px solid var(--border2)}.btn-secondary:hover{border-color:var(--border3);color:var(--text)}
+.btn-accent{background:var(--accent);color:#0d0d10}.btn-accent:hover{background:var(--accent2)}
+.btn-danger{background:rgba(224,92,92,0.12);color:var(--red2);border:1px solid rgba(224,92,92,0.25)}.btn-danger:hover{background:var(--red);color:white;border-color:var(--red)}
+.btn-violet{background:rgba(107,92,196,0.15);color:var(--violet2);border:1px solid rgba(107,92,196,0.3)}.btn-violet:hover{background:var(--violet);color:white;border-color:var(--violet)}
+.btn-sm{padding:0.35rem 0.75rem;font-size:0.62rem}
+.btn-lg{padding:0.75rem 1.5rem;font-size:0.75rem}
+.btn-full{width:100%;justify-content:center}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);padding:0.65rem 1rem;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.tbl td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle;font-size:0.83rem}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(255,255,255,0.02)}
+.tbl td.bold{font-weight:700;color:var(--text)}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:0.2rem 0.6rem;border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;font-weight:700;white-space:nowrap}
+.badge-green{background:rgba(76,175,130,0.15);color:var(--green2)}
+.badge-red{background:rgba(224,92,92,0.15);color:var(--red2)}
+.badge-yellow{background:rgba(201,168,76,0.15);color:var(--accent2)}
+.badge-blue{background:rgba(74,127,196,0.15);color:#80b4f0}
+.badge-violet{background:rgba(107,92,196,0.15);color:var(--violet2)}
+.badge-gray{background:var(--surface3);color:var(--text3)}
+.badge-teal{background:rgba(42,127,111,0.15);color:var(--teal3)}
+
+/* AVATAR */
+.avatar{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0;font-family:'Syne',sans-serif}
+.av-32{width:32px;height:32px;font-size:0.72rem}
+.av-38{width:38px;height:38px;font-size:0.82rem}
+.av-48{width:48px;height:48px;font-size:1rem}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+.tab-btn{padding:0.7rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.tab-btn:hover{color:var(--text2)}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* COLOR SWATCH */
+.swatch-box{display:flex;flex-direction:column;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border2)}
+.swatch-preview{height:72px;position:relative;cursor:pointer;transition:filter 0.2s}
+.swatch-preview:hover{filter:brightness(1.12)}
+.swatch-copy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);color:white;font-family:'JetBrains Mono',monospace;font-size:0.6rem;opacity:0;transition:opacity 0.2s}
+.swatch-preview:hover .swatch-copy{opacity:1}
+.swatch-info{padding:0.6rem 0.75rem;background:var(--surface2)}
+.swatch-name{font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:0.3rem}
+.swatch-input{width:100%;background:var(--surface3);border:1px solid var(--border3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.72rem;padding:0.3rem 0.55rem;border-radius:4px;outline:none;transition:border-color 0.15s}
+.swatch-input:focus{border-color:var(--teal2)}
+
+/* CHART BARS (pure CSS) */
+.chart-bars{display:flex;align-items:flex-end;gap:3px;height:80px;padding:0 0.25rem}
+.bar{flex:1;border-radius:2px 2px 0 0;transition:height 0.5s ease,opacity 0.2s;opacity:0.7;cursor:pointer;min-width:6px}
+.bar:hover{opacity:1}
+.chart-line-wrap{position:relative;height:100px;margin:0.5rem 0}
+.chart-labels{display:flex;justify-content:space-between;margin-top:0.4rem}
+.chart-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text4)}
+
+/* SPARKLINE */
+.sparkline-svg{width:100%;height:40px}
+
+/* LOG ITEMS */
+.log-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.7rem 0;border-bottom:1px solid var(--border)}
+.log-item:last-child{border-bottom:none}
+.log-lvl{font-family:'JetBrains Mono',monospace;font-size:0.58rem;padding:0.15rem 0.5rem;border-radius:3px;flex-shrink:0;margin-top:1px}
+.log-err{background:rgba(224,92,92,0.15);color:var(--red2)}
+.log-warn{background:rgba(201,168,76,0.15);color:var(--accent2)}
+.log-info{background:rgba(74,127,196,0.15);color:#80b4f0}
+.log-msg{font-size:0.8rem;color:var(--text2);flex:1;line-height:1.5}
+.log-time{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text4);flex-shrink:0;margin-top:2px}
+
+/* PROGRESS BAR */
+.pbar-wrap{margin-bottom:0.75rem}
+.pbar-hd{display:flex;justify-content:space-between;margin-bottom:0.3rem;font-size:0.75rem}
+.pbar-hd .pbar-lbl{color:var(--text2)}
+.pbar-hd .pbar-val{font-family:'JetBrains Mono',monospace;color:var(--text3)}
+.pbar-track{height:5px;background:var(--surface3);border-radius:5px;overflow:hidden}
+.pbar-fill{height:100%;border-radius:5px;transition:width 1s ease}
+
+/* MEDIA GRID */
+.media-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.75rem}
+.media-item{border-radius:var(--radius);overflow:hidden;border:2px solid transparent;cursor:pointer;transition:border-color 0.15s;position:relative;background:var(--surface3)}
+.media-item:hover{border-color:var(--teal2)}
+.media-item.selected{border-color:var(--accent)}
+.media-thumb{width:100%;aspect-ratio:1;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:2rem;opacity:0.4}
+.media-name{font-size:0.65rem;color:var(--text3);padding:0.3rem 0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono',monospace}
+.media-sel-check{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:var(--accent);display:none;align-items:center;justify-content:center;font-size:0.6rem;color:#0d0d10;font-weight:700}
+.media-item.selected .media-sel-check{display:flex}
+
+/* DRAG DROP MENU EDITOR */
+.menu-items{list-style:none}
+.menu-item-row{
+  display:flex;align-items:center;gap:0.6rem;padding:0.6rem 0.75rem;
+  background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);
+  margin-bottom:0.4rem;cursor:grab;transition:background 0.15s;
+}
+.menu-item-row:hover{background:var(--surface4)}
+.menu-item-row.dragging{opacity:0.4;cursor:grabbing}
+.menu-handle{color:var(--text4);font-size:0.9rem;cursor:grab}
+.menu-item-label{flex:1;font-size:0.83rem;color:var(--text)}
+.menu-item-url{font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text3);flex:1}
+
+/* RBAC USER CARD */
+.user-row{display:flex;align-items:center;gap:0.85rem;padding:0.85rem 1rem;border-bottom:1px solid var(--border);transition:background 0.15s}
+.user-row:last-child{border-bottom:none}
+.user-row:hover{background:rgba(255,255,255,0.02)}
+.user-meta{flex:1;min-width:0}
+.user-name2{font-size:0.85rem;font-weight:700;color:var(--text)}
+.user-email{font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-actions{display:flex;gap:0.35rem}
+
+/* COMMENT ROW */
+.comment-row{padding:1rem;border-bottom:1px solid var(--border)}
+.comment-row:last-child{border-bottom:none}
+.comment-meta{display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem}
+.comment-body{font-size:0.83rem;color:var(--text2);line-height:1.6;margin-bottom:0.6rem}
+.comment-actions{display:flex;gap:0.4rem}
+
+/* SEARCH BAR */
+.search-bar{display:flex;align-items:center;gap:0.5rem;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--radius);padding:0.5rem 0.85rem;transition:border-color 0.15s}
+.search-bar:focus-within{border-color:var(--teal2)}
+.search-bar input{background:none;border:none;outline:none;color:var(--text);font-size:0.83rem;flex:1;min-width:0}
+.search-bar input::placeholder{color:var(--text4)}
+.search-icon{color:var(--text3);font-size:0.85rem;flex-shrink:0}
+
+/* PERF METRIC */
+.perf-row{display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid var(--border)}
+.perf-row:last-child{border-bottom:none}
+.perf-label{font-size:0.82rem;color:var(--text2)}
+.perf-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:700}
+.perf-good{color:var(--green2)}.perf-warn{color:var(--accent2)}.perf-bad{color:var(--red2)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:1.25rem;right:1.25rem;z-index:9999;
+  background:var(--surface2);border:1px solid var(--border3);border-radius:var(--radius2);
+  padding:0.8rem 1.25rem;display:flex;align-items:center;gap:0.75rem;
+  font-size:0.83rem;color:var(--text);box-shadow:var(--shadow2);
+  transform:translateY(80px) scale(0.95);opacity:0;
+  transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;
+  max-width:320px;
+}
+.toast.show{transform:translateY(0) scale(1);opacity:1}
+.toast-icon{font-size:1.1rem;flex-shrink:0}
+.toast-text{flex:1}
+.toast-close{color:var(--text3);font-size:0.85rem;cursor:pointer;padding:0 0.2rem;pointer-events:all}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex;animation:fadeIn 0.2s ease}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius2);width:100%;max-width:540px;box-shadow:var(--shadow2);animation:slideUp 0.25s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.modal-close{color:var(--text3);font-size:1.1rem;cursor:pointer;transition:color 0.15s;background:none;border:none;padding:0.2rem}
+.modal-close:hover{color:var(--text)}
+.modal-body{padding:1.5rem}
+.modal-foot{padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:0.6rem}
+
+/* UPLOAD ZONE */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:var(--radius2);padding:2.5rem 1.5rem;
+  text-align:center;cursor:pointer;transition:all 0.2s;background:var(--surface2);
+}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--teal2);background:rgba(42,127,111,0.06)}
+.upload-zone-icon{font-size:2.5rem;margin-bottom:0.75rem;opacity:0.5}
+.upload-zone-text{font-size:0.85rem;color:var(--text2)}
+.upload-zone-sub{font-size:0.72rem;color:var(--text3);margin-top:0.3rem;font-family:'JetBrains Mono',monospace}
+
+/* RICH TEXT EDITOR */
+.rte-toolbar{padding:0.6rem 0.85rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.2rem;flex-wrap:wrap}
+.rte-btn{padding:0.3rem 0.55rem;background:none;border:1px solid transparent;color:var(--text2);border-radius:4px;font-size:0.8rem;transition:all 0.15s;font-family:inherit}
+.rte-btn:hover{background:var(--surface3);border-color:var(--border2);color:var(--text)}
+.rte-sep{width:1px;height:18px;background:var(--border2);margin:0 0.2rem}
+.rte-content{min-height:300px;padding:1.25rem;outline:none;font-size:0.9rem;color:var(--text2);line-height:1.8;caret-color:var(--teal2)}
+.rte-content:empty::before{content:attr(data-ph);color:var(--text4);pointer-events:none}
+.rte-content h1,.rte-content h2{font-family:'Syne',sans-serif;color:var(--text)}
+.rte-content blockquote{border-left:3px solid var(--accent);padding-left:1rem;color:var(--text3);font-style:italic}
+.rte-content a{color:var(--teal2)}
+
+/* SEPARATOR */
+.sep{height:1px;background:var(--border);margin:1.5rem 0}
+.sep-label{display:flex;align-items:center;gap:0.75rem;margin:1.25rem 0}
+.sep-label::before,.sep-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.sep-label span{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text4)}
+
+/* LIVE DOT */
+.live-dot{display:inline-flex;align-items:center;gap:0.35rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--green2)}
+.live-dot::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green2);animation:pulse2 2s infinite;flex-shrink:0}
+
+/* ROLE BADGES */
+.role-superadmin{background:rgba(224,92,92,0.15);color:var(--red2)}
+.role-editor{background:rgba(42,127,111,0.15);color:var(--teal3)}
+.role-moderator{background:rgba(107,92,196,0.15);color:var(--violet3)}
+.role-user{background:var(--surface3);color:var(--text3)}
+
+/* SCHEMA BOX */
+.schema-box{background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius);padding:1.25rem;font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--text2);line-height:1.9;overflow-x:auto;white-space:pre}
+.schema-key{color:var(--teal3)}
+.schema-type{color:var(--violet3)}
+.schema-comment{color:var(--text4)}
+
+/* RESPONSIVE FALLBACK */
+@media(max-width:900px){
+  #sidebar{transform:translateX(-100%)}
+  #main{margin-left:0}
+  .stat-cards{grid-template-columns:1fr 1fr}
+  .grid-4{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logomark">EK</div>
+    <div class="sb-logotxt">EtkiKomün <small>Kontrol Merkezi</small></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-section">Genel Bakış</div>
+    <div class="sb-item active" data-panel="dashboard"><span class="icon">⬡</span><span class="lbl">Dashboard</span><span class="sb-badge ok">Canlı</span></div>
+
+    <div class="sb-section">Global Ayarlar</div>
+    <div class="sb-item" data-panel="global-meta"><span class="icon">🌐</span><span class="lbl">Site Metadata</span></div>
+    <div class="sb-item" data-panel="global-maintenance"><span class="icon">🔧</span><span class="lbl">Bakım Modu</span></div>
+    <div class="sb-item" data-panel="global-i18n"><span class="icon">🗺</span><span class="lbl">Dil & i18n</span></div>
+
+    <div class="sb-section">Tema & UI</div>
+    <div class="sb-item" data-panel="theme-colors"><span class="icon">🎨</span><span class="lbl">Renk Paleti</span></div>
+    <div class="sb-item" data-panel="theme-typography"><span class="icon">Ⓣ</span><span class="lbl">Tipografi</span></div>
+    <div class="sb-item" data-panel="theme-mode"><span class="icon">◑</span><span class="lbl">Tema Modu</span></div>
+    <div class="sb-item" data-panel="theme-branding"><span class="icon">🖼</span><span class="lbl">Logo & Marka</span></div>
+
+    <div class="sb-section">Kullanıcı & Yetki</div>
+    <div class="sb-item" data-panel="rbac-users"><span class="icon">👥</span><span class="lbl">Kullanıcılar</span><span class="sb-badge info">24</span></div>
+    <div class="sb-item" data-panel="rbac-roles"><span class="icon">🛡</span><span class="lbl">Rol Yönetimi</span></div>
+    <div class="sb-item" data-panel="rbac-moderation"><span class="icon">🗂</span><span class="lbl">Moderasyon</span><span class="sb-badge warn">7</span></div>
+
+    <div class="sb-section">İçerik & Medya</div>
+    <div class="sb-item" data-panel="cms-editor"><span class="icon">✍</span><span class="lbl">Yazı Editörü</span></div>
+    <div class="sb-item" data-panel="cms-media"><span class="icon">📁</span><span class="lbl">Medya Kütüphanesi</span></div>
+    <div class="sb-item" data-panel="cms-menus"><span class="icon">☰</span><span class="lbl">Menü Editörü</span></div>
+
+    <div class="sb-section">Sistem & Analitik</div>
+    <div class="sb-item" data-panel="sys-analytics"><span class="icon">📈</span><span class="lbl">Analitik</span><span class="live-dot">CANLI</span></div>
+    <div class="sb-item" data-panel="sys-performance"><span class="icon">⚡</span><span class="lbl">Performans</span></div>
+    <div class="sb-item" data-panel="sys-logs"><span class="icon">🪵</span><span class="lbl">Hata Logları</span><span class="sb-badge warn">3</span></div>
+
+    <div class="sb-section">Mimari</div>
+    <div class="sb-item" data-panel="arch-schema"><span class="icon">🗃</span><span class="lbl">DB Şeması</span></div>
+    <div class="sb-item" data-panel="arch-state"><span class="icon">⚛</span><span class="lbl">State Yönetimi</span></div>
+    <div class="sb-item" data-panel="arch-components"><span class="icon">🧩</span><span class="lbl">Bileşen Ağacı</span></div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-avatar">SA</div>
+    <div class="sb-userinfo">
+      <div class="sb-username">Süper Admin</div>
+      <div class="sb-userrole">superadmin</div>
+    </div>
+    <span class="sb-logout" title="Çıkış">⏻</span>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main id="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="tb-title" id="tb-title">Dashboard</div>
+        <div class="breadcrumb" id="tb-crumb"><span>EtkiKomün</span> › <span>Dashboard</span></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="tb-pill"><span class="tb-dot" style="background:var(--green);width:7px;height:7px;border-radius:50%;animation:pulse2 2s infinite"></span> Sistem Sağlıklı</span>
+      <button class="tb-pill" onclick="openModal('modal-cache')">🗑 Cache Temizle</button>
+      <button class="tb-pill primary" onclick="nav('cms-editor')">+ Yeni Yazı</button>
+    </div>
+  </div>
+
+  <div id="content">
+
+<!-- ══════════════════════════════════════
+     PANEL: DASHBOARD
+══════════════════════════════════════ -->
+<div class="panel active" id="panel-dashboard">
+  <div class="pg-header">
+    <div><div class="pg-title">Dashboard</div><div class="pg-sub">Genel sistem durumu ve hızlı erişim</div></div>
+    <div class="btn-row"><span class="live-dot">Canlı Veri</span></div>
+  </div>
+  <div class="stat-cards">
+    <div class="stat-card"><div class="sc-label">Aktif Kullanıcı<span class="sc-icon">👥</span></div><div class="sc-val" id="stat-users">24</div><div class="sc-trend up">↑ +3 bugün</div></div>
+    <div class="stat-card"><div class="sc-label">Toplam Yazı<span class="sc-icon">📝</span></div><div class="sc-val">47</div><div class="sc-trend up">↑ +5 bu ay</div></div>
+    <div class="stat-card"><div class="sc-label">Bekleyen Onay<span class="sc-icon">⏳</span></div><div class="sc-val" id="stat-pending">7</div><div class="sc-trend down">↑ 3 yeni</div></div>
+    <div class="stat-card"><div class="sc-label">Sunucu Yanıt<span class="sc-icon">⚡</span></div><div class="sc-val">142<small style="font-size:1rem;color:var(--text3)">ms</small></div><div class="sc-trend up">↑ %12 iyileşme</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title"><span class="card-icon">📈</span>Haftalık Sayfa Görüntülenme</div><span class="live-dot">Canlı</span></div>
+      <div class="card-body">
+        <div class="chart-bars" id="dash-chart">
+          <div class="bar" style="height:45%;background:var(--teal)" title="Pzt: 1.2k"></div>
+          <div class="bar" style="height:62%;background:var(--teal)" title="Sal: 1.8k"></div>
+          <div class="bar" style="height:38%;background:var(--teal)" title="Çar: 1.1k"></div>
+          <div class="bar" style="height:80%;background:var(--teal)" title="Per: 2.4k"></div>
+          <div class="bar" style="height:55%;background:var(--teal)" title="Cum: 1.6k"></div>
+          <div class="bar" style="height:90%;background:var(--accent)" title="Cmt: 2.7k"></div>
+          <div class="bar" style="height:70%;background:var(--teal)" title="Paz: 2.1k"></div>
+        </div>
+        <div class="chart-labels">
+          <span class="chart-label">Pzt</span><span class="chart-label">Sal</span><span class="chart-label">Çar</span><span class="chart-label">Per</span><span class="chart-label">Cum</span><span class="chart-label">Cmt</span><span class="chart-label">Paz</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title"><span class="card-icon">🪵</span>Son Sistem Olayları</div><button class="btn btn-secondary btn-sm" onclick="nav('sys-logs')">Tümü</button></div>
+      <div class="card-body" style="padding:0.5rem 1.25rem">
+        <div class="log-item"><span class="log-lvl log-err">ERR</span><span class="log-msg">POST /api/upload — 413 Payload Too Large</span><span class="log-time">2dk</span></div>
+        <div class="log-item"><span class="log-lvl log-warn">WARN</span><span class="log-msg">Rate limit yaklaşıldı: /api/comments (87/100)</span><span class="log-time">8dk</span></div>
+        <div class="log-item"><span class="log-lvl log-info">INFO</span><span class="log-msg">Cache temizlendi — 234MB serbest bırakıldı</span><span class="log-time">1sa</span></div>
+        <div class="log-item"><span class="log-lvl log-info">INFO</span><span class="log-msg">Yeni kullanıcı kaydı: ali.k@example.com</span><span class="log-time">2sa</span></div>
+        <div class="log-item"><span class="log-lvl log-err">ERR</span><span class="log-msg">DB bağlantısı 350ms gecikmeli yanıt verdi</span><span class="log-time">4sa</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="sep"></div>
+  <div class="grid-4" style="margin-top:0">
+    <div class="card" style="cursor:pointer" onclick="nav('global-meta')"><div class="card-body" style="text-align:center;padding:1.5rem 1rem"><div style="font-size:1.8rem;margin-bottom:0.5rem">🌐</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.25rem">Site Ayarları</div><div style="font-size:0.72rem;color:var(--text3)">Metadata & SEO</div></div></div>
+    <div class="card" style="cursor:pointer" onclick="nav('theme-colors')"><div class="card-body" style="text-align:center;padding:1.5rem 1rem"><div style="font-size:1.8rem;margin-bottom:0.5rem">🎨</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.25rem">Tema Motoru</div><div style="font-size:0.72rem;color:var(--text3)">Renk & Tipografi</div></div></div>
+    <div class="card" style="cursor:pointer" onclick="nav('rbac-users')"><div class="card-body" style="text-align:center;padding:1.5rem 1rem"><div style="font-size:1.8rem;margin-bottom:0.5rem">🛡</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.25rem">Kullanıcı & RBAC</div><div style="font-size:0.72rem;color:var(--text3)">Yetki Yönetimi</div></div></div>
+    <div class="card" style="cursor:pointer" onclick="nav('sys-analytics')"><div class="card-body" style="text-align:center;padding:1.5rem 1rem"><div style="font-size:1.8rem;margin-bottom:0.5rem">📊</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:0.25rem">Analitik</div><div style="font-size:0.72rem;color:var(--text3)">Canlı Trafik</div></div></div>
+  </div>
+</div>
+
+<!-- ══ GLOBAL META ══ -->
+<div class="panel" id="panel-global-meta">
+  <div class="pg-header"><div><div class="pg-title">Site Metadata & SEO</div><div class="pg-sub">Arama motoru ve sosyal medya meta ayarları</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Meta ayarları kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🌐 Temel Bilgiler</div></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">Site Başlığı</label><input class="f-input" value="Etki Komün"/></div>
+        <div class="f-row"><label class="f-label">Kısa Açıklama (Meta Description)</label><textarea class="f-textarea" style="min-height:60px">Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler. Hayatın her katmanına dair derinlemesine analizler.</textarea></div>
+        <div class="f-row"><label class="f-label">Anahtar Kelimeler</label><input class="f-input" value="felsefe, bilim, sanat, politika, düşünce, analiz, Türkiye"/><div class="f-hint">Virgülle ayırın</div></div>
+        <div class="f-row"><label class="f-label">Canonical URL</label><input class="f-input" value="https://etkikomun.com"/></div>
+        <div class="f-row"><label class="f-label">Robots Direktifi</label>
+          <select class="f-select"><option>index, follow</option><option>noindex, nofollow</option><option>index, nofollow</option></select>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-hd"><div class="card-hd-title">📱 Open Graph (Sosyal Medya)</div></div>
+        <div class="card-body">
+          <div class="f-row"><label class="f-label">OG Başlık</label><input class="f-input" value="Etki Komün — Düşüncenin Buluşma Noktası"/></div>
+          <div class="f-row"><label class="f-label">OG Açıklaması</label><textarea class="f-textarea" style="min-height:50px">Bağımsız sesler, cesur fikirler. Bilim, felsefe, sanat, politika.</textarea></div>
+          <div class="f-row"><label class="f-label">OG Görsel URL</label><input class="f-input" placeholder="https://etkikomun.com/og-image.jpg"/></div>
+          <div class="f-row"><label class="f-label">Twitter Card Türü</label>
+            <select class="f-select"><option>summary_large_image</option><option>summary</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title">🔍 Yapısal Veri (Schema.org)</div></div>
+        <div class="card-body">
+          <div class="f-row"><label class="f-label">Organizasyon Türü</label>
+            <select class="f-select"><option>Blog</option><option>NewsMediaOrganization</option><option>Organization</option></select>
+          </div>
+          <div class="f-row"><label class="f-label">Kuruluş Yılı</label><input class="f-input" value="2025"/></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Breadcrumb Schema</div><div class="t-desc">Sayfa yolunu arama sonuçlarında göster</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Article Schema</div><div class="t-desc">Blog yazılarını yapısal veriyle işaretle</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAINTENANCE MODE ══ -->
+<div class="panel" id="panel-global-maintenance">
+  <div class="pg-header"><div><div class="pg-title">Bakım Modu</div><div class="pg-sub">Siteyi geçici olarak ziyaretçilere kapatın</div></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🔧 Bakım Modu Kontrolü</div></div>
+      <div class="card-body">
+        <div style="text-align:center;padding:1.5rem 0 2rem">
+          <div style="font-size:4rem;margin-bottom:1rem" id="maint-icon">✅</div>
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.5rem" id="maint-status-text">Site Aktif</div>
+          <div style="font-size:0.82rem;color:var(--text3);margin-bottom:2rem" id="maint-sub-text">Tüm ziyaretçiler siteye erişebiliyor</div>
+          <button class="btn btn-danger btn-lg" id="maint-toggle-btn" onclick="toggleMaintenance()">🔧 Bakım Modunu Aç</button>
+        </div>
+        <div class="sep-label"><span>Bakım Sayfası Ayarları</span></div>
+        <div class="f-row"><label class="f-label">Bakım Mesajı</label><textarea class="f-textarea">Sitemiz güncelleniyor. Kısa süre içinde geri döneceğiz. 🛠️</textarea></div>
+        <div class="f-row"><label class="f-label">Tahmini Bitiş Zamanı</label><input class="f-input" type="datetime-local"/></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Admin Erişimi</div><div class="t-desc">Bakım modunda adminler erişebilir</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">E-posta Bildirimi</div><div class="t-desc">Bakım bittinde abonelere bildir</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">📋 IP Whitelist</div><button class="btn btn-secondary btn-sm" onclick="toast('✅','IP eklendi')">+ Ekle</button></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">IP Adresi Ekle</label><input class="f-input" placeholder="192.168.1.1 veya 10.0.0.0/24"/></div>
+        <div style="margin-top:1rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.75rem;background:var(--surface3);border-radius:var(--radius);margin-bottom:0.4rem">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--teal2)">127.0.0.1</span>
+            <div style="display:flex;align-items:center;gap:0.5rem"><span class="badge badge-teal">Localhost</span><button class="btn btn-danger btn-sm" style="padding:0.2rem 0.5rem">✕</button></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.75rem;background:var(--surface3);border-radius:var(--radius);margin-bottom:0.4rem">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--teal2)">185.20.14.200</span>
+            <div style="display:flex;align-items:center;gap:0.5rem"><span class="badge badge-green">Admin</span><button class="btn btn-danger btn-sm" style="padding:0.2rem 0.5rem">✕</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ i18n ══ -->
+<div class="panel" id="panel-global-i18n">
+  <div class="pg-header"><div><div class="pg-title">Dil & Yerelleştirme (i18n)</div><div class="pg-sub">Çoklu dil yönetimi ve yerel ayarlar</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Dil ayarları kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🌍 Dil Ayarları</div></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">Varsayılan Dil</label><select class="f-select"><option>Türkçe (tr-TR)</option><option>English (en-US)</option><option>Deutsch (de-DE)</option></select></div>
+        <div class="f-row"><label class="f-label">Zaman Dilimi</label><select class="f-select"><option>Europe/Istanbul (UTC+3)</option><option>UTC</option><option>America/New_York</option></select></div>
+        <div class="f-row"><label class="f-label">Tarih Formatı</label><select class="f-select"><option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option></select></div>
+        <div class="f-row"><label class="f-label">Para Birimi</label><select class="f-select"><option>TRY (₺)</option><option>USD ($)</option><option>EUR (€)</option></select></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Otomatik Dil Tespiti</div><div class="t-desc">Tarayıcı diline göre otomatik yönlendir</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">URL'de Dil Öneki</div><div class="t-desc">/tr/yazi veya /en/post formatı</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">📦 Aktif Dil Paketleri</div><button class="btn btn-secondary btn-sm" onclick="toast('✅','Dil paketi eklendi')">+ Paket Ekle</button></div>
+      <div class="card-body" style="padding:0">
+        <div class="user-row">
+          <div style="font-size:1.5rem">🇹🇷</div>
+          <div class="user-meta"><div class="user-name2">Türkçe</div><div class="user-email">tr-TR · 342 çeviri anahtarı · %100</div></div>
+          <span class="badge badge-green">Varsayılan</span>
+        </div>
+        <div class="user-row">
+          <div style="font-size:1.5rem">🇬🇧</div>
+          <div class="user-meta"><div class="user-name2">English</div><div class="user-email">en-US · 280/342 çeviri anahtarı · %82</div></div>
+          <span class="badge badge-yellow">Eksik</span>
+        </div>
+        <div class="user-row">
+          <div style="font-size:1.5rem">🇩🇪</div>
+          <div class="user-meta"><div class="user-name2">Deutsch</div><div class="user-email">de-DE · 120/342 çeviri anahtarı · %35</div></div>
+          <span class="badge badge-red">Yarım</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEME COLORS ══ -->
+<div class="panel" id="panel-theme-colors">
+  <div class="pg-header"><div><div class="pg-title">Dinamik Renk Paleti</div><div class="pg-sub">Etki Komün'ün renk sistemini yönetin</div></div><div class="btn-row"><button class="btn btn-secondary" onclick="resetColors()">↺ Sıfırla</button><button class="btn btn-primary" onclick="applyColorPalette()">✓ Uygula & Kaydet</button></div></div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="card-hd"><div class="card-hd-title">⚡ Hazır Temalar</div></div>
+    <div class="card-body">
+      <div class="grid-4" style="margin:0">
+        <div class="card" id="pt-default" style="cursor:pointer;border-color:var(--accent)" onclick="applyPreset('default',this)"><div class="card-body" style="padding:0.85rem;text-align:center"><div style="display:flex;justify-content:center;gap:0.35rem;margin-bottom:0.5rem"><div style="width:22px;height:22px;border-radius:50%;background:#c9a84c"></div><div style="width:22px;height:22px;border-radius:50%;background:#2a7f6f"></div><div style="width:22px;height:22px;border-radius:50%;background:#6b5cc4"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text2)">Orijinal</div></div></div>
+        <div class="card" id="pt-ocean" style="cursor:pointer" onclick="applyPreset('ocean',this)"><div class="card-body" style="padding:0.85rem;text-align:center"><div style="display:flex;justify-content:center;gap:0.35rem;margin-bottom:0.5rem"><div style="width:22px;height:22px;border-radius:50%;background:#2eb5d4"></div><div style="width:22px;height:22px;border-radius:50%;background:#1a6b8a"></div><div style="width:22px;height:22px;border-radius:50%;background:#0d3d52"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text2)">Okyanus</div></div></div>
+        <div class="card" id="pt-ember" style="cursor:pointer" onclick="applyPreset('ember',this)"><div class="card-body" style="padding:0.85rem;text-align:center"><div style="display:flex;justify-content:center;gap:0.35rem;margin-bottom:0.5rem"><div style="width:22px;height:22px;border-radius:50%;background:#e8864c"></div><div style="width:22px;height:22px;border-radius:50%;background:#c94c2a"></div><div style="width:22px;height:22px;border-radius:50%;background:#6b2210"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text2)">Kor</div></div></div>
+        <div class="card" id="pt-forest" style="cursor:pointer" onclick="applyPreset('forest',this)"><div class="card-body" style="padding:0.85rem;text-align:center"><div style="display:flex;justify-content:center;gap:0.35rem;margin-bottom:0.5rem"><div style="width:22px;height:22px;border-radius:50%;background:#a8c256"></div><div style="width:22px;height:22px;border-radius:50%;background:#3a7d44"></div><div style="width:22px;height:22px;border-radius:50%;background:#1e4d2b"></div></div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text2)">Orman</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🎨 Renk Değerleri</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem" id="color-swatches">
+          <div class="swatch-box"><div class="swatch-preview" id="sw-accent" style="background:#c9a84c" onclick="copyHex('#c9a84c')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Primary / Accent</div><input class="swatch-input" id="ci-accent" value="#c9a84c" oninput="liveSwatch('sw-accent',this.value)"/></div></div>
+          <div class="swatch-box"><div class="swatch-preview" id="sw-teal" style="background:#2a7f6f" onclick="copyHex('#2a7f6f')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Secondary / Teal</div><input class="swatch-input" id="ci-teal" value="#2a7f6f" oninput="liveSwatch('sw-teal',this.value)"/></div></div>
+          <div class="swatch-box"><div class="swatch-preview" id="sw-violet" style="background:#6b5cc4" onclick="copyHex('#6b5cc4')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Tertiary / Violet</div><input class="swatch-input" id="ci-violet" value="#6b5cc4" oninput="liveSwatch('sw-violet',this.value)"/></div></div>
+          <div class="swatch-box"><div class="swatch-preview" id="sw-earth" style="background:#8b6a42" onclick="copyHex('#8b6a42')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Toprak / Earth</div><input class="swatch-input" id="ci-earth" value="#8b6a42" oninput="liveSwatch('sw-earth',this.value)"/></div></div>
+          <div class="swatch-box"><div class="swatch-preview" id="sw-bg" style="background:#0f0e0c" onclick="copyHex('#0f0e0c')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Arka Plan (Site)</div><input class="swatch-input" id="ci-bg" value="#0f0e0c" oninput="liveSwatch('sw-bg',this.value)"/></div></div>
+          <div class="swatch-box"><div class="swatch-preview" id="sw-cream" style="background:#f5f0e8" onclick="copyHex('#f5f0e8')"><div class="swatch-copy">Kopyala</div></div><div class="swatch-info"><div class="swatch-name">Zemin / Cream</div><input class="swatch-input" id="ci-cream" value="#f5f0e8" oninput="liveSwatch('sw-cream',this.value)"/></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">👁 Canlı Önizleme</div></div>
+      <div class="card-body">
+        <div id="color-preview" style="background:#0f0e0c;border-radius:var(--radius);padding:1.5rem;min-height:220px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.7rem" id="pv-eyebrow" style="color:#2a7f6f">Düşüncenin Buluşma Noktası</div>
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;line-height:1;margin-bottom:0.5rem"><span id="pv-t1" style="color:#f5f0e8">Etki</span> <em id="pv-t2" style="color:#c9a84c">Komün</em></div>
+          <div style="font-size:0.82rem;color:rgba(245,240,232,0.55);margin-bottom:1.2rem">Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler.</div>
+          <div style="display:flex;gap:0.75rem">
+            <div id="pv-btn1" style="padding:0.5rem 1.1rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;background:#2a7f6f;color:white">Keşfet</div>
+            <div id="pv-btn2" style="padding:0.5rem 1.1rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:0.68rem;border:1.5px solid #c9a84c;color:#c9a84c">Hakkımızda</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem">
+          <div class="f-row"><label class="f-label">CSS Değişkenlerini Dışa Aktar</label></div>
+          <button class="btn btn-secondary btn-full" onclick="exportCSS()">📋 CSS Kopyala</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TYPOGRAPHY ══ -->
+<div class="panel" id="panel-theme-typography">
+  <div class="pg-header"><div><div class="pg-title">Tipografi Ayarları</div><div class="pg-sub">Google Fonts entegrasyonu ve font boyutları</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Tipografi kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🔤 Font Seçimi</div></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">Başlık Fontu (Display)</label><select class="f-select" onchange="updateFontPreview()" id="font-display"><option>Playfair Display</option><option>Syne</option><option>Cormorant Garamond</option><option>DM Serif Display</option><option>Libre Baskerville</option><option>Bodoni Moda</option></select></div>
+        <div class="f-row"><label class="f-label">Gövde Fontu (Body)</label><select class="f-select" id="font-body"><option>Lato</option><option>DM Sans</option><option>Source Serif 4</option><option>Merriweather</option><option>Nunito</option></select></div>
+        <div class="f-row"><label class="f-label">Kod / Mono Fontu</label><select class="f-select"><option>JetBrains Mono</option><option>Fira Code</option><option>Space Mono</option><option>IBM Plex Mono</option></select></div>
+        <div class="sep"></div>
+        <div class="f-row"><label class="f-label">Temel Font Boyutu (px)</label><input class="f-input" type="number" value="15" min="12" max="20"/></div>
+        <div class="f-row"><label class="f-label">Satır Yüksekliği</label><input class="f-input" type="number" value="1.75" step="0.05"/></div>
+        <div class="f-row"><label class="f-label">Başlık Harf Aralığı (em)</label><input class="f-input" type="number" value="-0.02" step="0.005"/></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">👁 Font Önizleme</div></div>
+      <div class="card-body">
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;background:var(--bg)">
+          <div id="fp-h1" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--text);margin-bottom:0.5rem">Başlık — H1 Yazı Stili</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text2);margin-bottom:0.75rem">Alt Başlık — H2 Stili</div>
+          <p style="font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:0.75rem">Gövde metni örneği. Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler sunuyoruz. Bu metin normal yazı boyutunda görünüyor.</p>
+          <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:var(--surface3);padding:0.2rem 0.5rem;border-radius:3px;color:var(--teal2)">const etki = 'komün';</code>
+        </div>
+        <div class="sep"></div>
+        <div class="f-row"><label class="f-label">Yazı Boyutu Ölçeği</label>
+          <select class="f-select"><option>Minor Third (1.2)</option><option>Major Third (1.25)</option><option>Perfect Fourth (1.333)</option><option>Golden Ratio (1.618)</option></select>
+        </div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Fluid Typography</div><div class="t-desc">clamp() ile responsive font boyutları</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ THEME MODE ══ -->
+<div class="panel" id="panel-theme-mode">
+  <div class="pg-header"><div><div class="pg-title">Tema Modu</div><div class="pg-sub">Dark / Light mod varsayılan ayarları</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Tema modu kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">◑ Mod Seçimi</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1.25rem">
+          <div onclick="selectMode(this,'dark')" class="card" id="mode-dark" style="cursor:pointer;padding:1.25rem;text-align:center;border-color:var(--accent)"><div style="font-size:1.8rem;margin-bottom:0.4rem">🌑</div><div style="font-size:0.78rem;font-weight:700;color:var(--text)">Koyu</div><div style="font-size:0.65rem;color:var(--text3)">Seçili</div></div>
+          <div onclick="selectMode(this,'light')" class="card" id="mode-light" style="cursor:pointer;padding:1.25rem;text-align:center"><div style="font-size:1.8rem;margin-bottom:0.4rem">☀️</div><div style="font-size:0.78rem;font-weight:700;color:var(--text)">Aydınlık</div><div style="font-size:0.65rem;color:var(--text3)">Pasif</div></div>
+          <div onclick="selectMode(this,'system')" class="card" id="mode-system" style="cursor:pointer;padding:1.25rem;text-align:center"><div style="font-size:1.8rem;margin-bottom:0.4rem">💻</div><div style="font-size:0.78rem;font-weight:700;color:var(--text)">Sistem</div><div style="font-size:0.65rem;color:var(--text3)">Pasif</div></div>
+        </div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Kullanıcı Tercihi Kaydet</div><div class="t-desc">Kullanıcının seçtiği modu LocalStorage'a kaydet</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Geçiş Animasyonu</div><div class="t-desc">Tema değişiminde yumuşak geçiş efekti</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Okuma Modu</div><div class="t-desc">Yazı sayfalarında özel okuma teması</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🎨 Özel Tema Renkleri</div></div>
+      <div class="card-body">
+        <div class="sep-label"><span>Koyu Tema</span></div>
+        <div class="f-row"><label class="f-label">Arka Plan</label><input class="f-input" value="#0f0e0c"/></div>
+        <div class="f-row"><label class="f-label">Yüzey</label><input class="f-input" value="#161614"/></div>
+        <div class="sep-label"><span>Aydınlık Tema</span></div>
+        <div class="f-row"><label class="f-label">Arka Plan</label><input class="f-input" value="#f5f0e8"/></div>
+        <div class="f-row"><label class="f-label">Yüzey</label><input class="f-input" value="#ffffff"/></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BRANDING ══ -->
+<div class="panel" id="panel-theme-branding">
+  <div class="pg-header"><div><div class="pg-title">Logo & Marka Görselleri</div><div class="pg-sub">Site logolarını ve favicon'u yönetin</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Marka ayarları kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🖼 Logo Yükleme</div></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">Ana Logo (Koyu Arka Plan)</label>
+          <div class="upload-zone" onclick="toast('📁','Dosya seçici açıldı')"><div class="upload-zone-icon">🖼</div><div class="upload-zone-text">Logo görselini buraya sürükleyin</div><div class="upload-zone-sub">SVG, PNG · Maks 2MB · Önerilen: 240×60px</div></div>
+        </div>
+        <div class="f-row"><label class="f-label">Logo (Aydınlık Arka Plan)</label>
+          <div class="upload-zone" onclick="toast('📁','Dosya seçici açıldı')"><div class="upload-zone-icon">🖼</div><div class="upload-zone-text">Açık tema logosu</div><div class="upload-zone-sub">SVG, PNG · Maks 2MB</div></div>
+        </div>
+        <div class="f-row"><label class="f-label">Favicon</label>
+          <div class="upload-zone" onclick="toast('📁','Dosya seçici açıldı')" style="padding:1.25rem"><div class="upload-zone-icon" style="font-size:1.5rem">⭐</div><div class="upload-zone-text">Favicon</div><div class="upload-zone-sub">ICO, PNG · 32×32 veya 64×64px</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">📐 Logo Ayarları</div></div>
+      <div class="card-body">
+        <div class="f-row"><label class="f-label">Logo Genişliği (px)</label><input class="f-input" type="number" value="160"/></div>
+        <div class="f-row"><label class="f-label">Mobil Logo Genişliği (px)</label><input class="f-input" type="number" value="120"/></div>
+        <div class="sep"></div>
+        <div class="f-row"><label class="f-label">OG Görseli (1200×630)</label>
+          <div class="upload-zone" onclick="toast('📁','Dosya seçici açıldı')" style="padding:1.25rem"><div class="upload-zone-icon" style="font-size:1.5rem">📸</div><div class="upload-zone-text">Sosyal Medya Görseli</div><div class="upload-zone-sub">JPG, PNG · 1200×630px · Maks 5MB</div></div>
+        </div>
+        <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Metin Logo Fallback</div><div class="t-desc">Logo yüklenemezse metin göster</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RBAC USERS ══ -->
+<div class="panel" id="panel-rbac-users">
+  <div class="pg-header"><div><div class="pg-title">Kullanıcı Yönetimi</div><div class="pg-sub">24 kayıtlı kullanıcı</div></div><div class="btn-row"><div class="search-bar" style="width:240px"><span class="search-icon">🔍</span><input placeholder="Kullanıcı ara..." oninput="filterUsers(this.value)"/></div><button class="btn btn-primary" onclick="openModal('modal-new-user')">+ Kullanıcı Ekle</button></div></div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="tabs" style="margin:0;padding:0 1.25rem">
+      <button class="tab-btn active" onclick="filterRole(this,'all')">Tümü (24)</button>
+      <button class="tab-btn" onclick="filterRole(this,'superadmin')">Super Admin (1)</button>
+      <button class="tab-btn" onclick="filterRole(this,'editor')">Editör (4)</button>
+      <button class="tab-btn" onclick="filterRole(this,'moderator')">Moderatör (3)</button>
+      <button class="tab-btn" onclick="filterRole(this,'user')">Kullanıcı (16)</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap">
+      <table class="tbl" id="users-table">
+        <thead><tr><th>Kullanıcı</th><th>Rol</th><th>Durum</th><th>Kayıt Tarihi</th><th>Son Giriş</th><th>İşlemler</th></tr></thead>
+        <tbody id="users-tbody">
+          <tr data-role="superadmin"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--red),var(--violet))">SA</div><div><div>Süper Admin</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">admin@etkikomun.com</div></div></div></td><td><span class="badge role-superadmin">Super Admin</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">01.01.2025</td><td style="color:var(--text3)">Şimdi</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm">Düzenle</button></div></td></tr>
+          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--teal),var(--blue))">AY</div><div><div>Ayşe Yılmaz</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">ayse@etkikomun.com</div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">15.01.2025</td><td style="color:var(--text3)">2sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--accent),var(--earth))">MK</div><div><div>Mehmet Kaya</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">mehmet@etkikomun.com</div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">22.01.2025</td><td style="color:var(--text3)">1 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+          <tr data-role="moderator"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--violet),var(--violet2))">ZD</div><div><div>Zeynep Demir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">zeynep@example.com</div></div></div></td><td><span class="badge role-moderator">Moderatör</span></td><td><span class="badge badge-yellow">Beklemede</span></td><td style="color:var(--text3)">5.02.2025</td><td style="color:var(--text3)">3 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-primary btn-sm" onclick="toast('✅','Kullanıcı onaylandı')">Onayla</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı reddedildi')">Reddet</button></div></td></tr>
+          <tr data-role="user"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--blue),var(--teal))">AK</div><div><div>Ali Karademir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">ali.k@example.com</div></div></div></td><td><span class="badge role-user">Kullanıcı</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">10.02.2025</td><td style="color:var(--text3)">5sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RBAC ROLES ══ -->
+<div class="panel" id="panel-rbac-roles">
+  <div class="pg-header"><div><div class="pg-title">Rol & Yetki Yönetimi (RBAC)</div><div class="pg-sub">Her role atanan izinleri düzenleyin</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Roller kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-hd"><div class="card-hd-title" style="color:var(--red2)">👑 Super Admin</div><span class="badge badge-red">Tam Yetki</span></div>
+        <div class="card-body"><p style="font-size:0.82rem;color:var(--text2)">Tüm modüllere tam erişim. Diğer rolleri yönetir. Sistem ayarlarını değiştirebilir. Silinemez.</p></div>
+      </div>
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-hd"><div class="card-hd-title" style="color:var(--teal3)">✍ Editör</div><span class="badge badge-teal">Geniş Yetki</span></div>
+        <div class="card-body">
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yazı Oluştur / Düzenle</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yazı Yayınla</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Medya Yükle</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Kullanıcı Yönetimi</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Site Ayarları</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-hd"><div class="card-hd-title" style="color:var(--violet2)">🛡 Moderatör</div><span class="badge badge-violet">Orta Yetki</span></div>
+        <div class="card-body">
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yazı Düzenle</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yazı Yayınla</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yorum Yönet</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Kullanıcı Banla</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Medya Yükle</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-title" style="color:var(--text3)">👤 Standart Kullanıcı</div><span class="badge badge-gray">Kısıtlı</span></div>
+        <div class="card-body">
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Profil Düzenle</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yorum Yaz</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Yazı Oluştur</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+          <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Medya Yükle</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODERATION ══ -->
+<div class="panel" id="panel-rbac-moderation">
+  <div class="pg-header"><div><div class="pg-title">Moderasyon Merkezi</div><div class="pg-sub">Bekleyen yorum ve forum gönderileri</div></div><div class="btn-row"><span class="badge badge-red" style="font-size:0.75rem;padding:0.3rem 0.8rem">7 bekliyor</span></div></div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchModeTab(this,'comments')">Yorumlar (5)</button>
+    <button class="tab-btn" onclick="switchModeTab(this,'reports')">Şikayetler (2)</button>
+  </div>
+  <div id="mod-comments" class="card">
+    <div class="comment-row">
+      <div class="comment-meta"><div class="avatar av-32" style="background:linear-gradient(135deg,#4a7fc4,#2a7f6f)">BK</div><div><div style="font-size:0.83rem;font-weight:700;color:var(--text)">Berk Koç</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3)">"Özgür İrade" yazısına · 2sa önce</div></div><span class="badge badge-yellow" style="margin-left:auto">Bekliyor</span></div>
+      <div class="comment-body">"Deterministik bir evrende sorumluluk kavramının nasıl temellendirileceği gerçekten düşündürücü. Kant'ın pratik aklı burada devreye giriyor olabilir..."</div>
+      <div class="comment-actions"><button class="btn btn-primary btn-sm" onclick="toast('✅','Yorum onaylandı')">✓ Onayla</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Yorum reddedildi')">✕ Reddet</button><button class="btn btn-secondary btn-sm">Yanıtla</button></div>
+    </div>
+    <div class="comment-row">
+      <div class="comment-meta"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--violet),var(--red))">SK</div><div><div style="font-size:0.83rem;font-weight:700;color:var(--text)">Selin Karabay</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3)">"Kuantum Mekaniği" yazısına · 5sa önce</div></div><span class="badge badge-yellow" style="margin-left:auto">Bekliyor</span></div>
+      <div class="comment-body">"Copenhagen yorumunu bu kadar açık anlatan başka bir Türkçe kaynak bulmak çok zor. Teşekkürler!"</div>
+      <div class="comment-actions"><button class="btn btn-primary btn-sm" onclick="toast('✅','Yorum onaylandı')">✓ Onayla</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Yorum reddedildi')">✕ Reddet</button><button class="btn btn-secondary btn-sm">Yanıtla</button></div>
+    </div>
+    <div class="comment-row">
+      <div class="comment-meta"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--red),var(--orange))">XX</div><div><div style="font-size:0.83rem;font-weight:700;color:var(--text)">Anonim</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3)">"Popülizm" yazısına · 8sa önce</div></div><span class="badge badge-red" style="margin-left:auto">Spam Şüphesi</span></div>
+      <div class="comment-body" style="color:var(--red2)">"[SPAM içerik algılandı — 3 harici link içeriyor]"</div>
+      <div class="comment-actions"><button class="btn btn-danger btn-sm" onclick="toast('🚫','Spam silindi')">🗑 Sil & Banla</button><button class="btn btn-secondary btn-sm">İncele</button></div>
+    </div>
+  </div>
+  <div id="mod-reports" class="card" style="display:none">
+    <div class="comment-row">
+      <div class="comment-meta"><div style="font-size:1.2rem">🚨</div><div><div style="font-size:0.83rem;font-weight:700;color:var(--text)">Uygunsuz İçerik Şikayeti</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--text3)">Şikayet eden: 3 kullanıcı · "Soyut Sanat" yorumu</div></div><span class="badge badge-red" style="margin-left:auto">Kritik</span></div>
+      <div class="comment-body">"Bu yorum topluluk kurallarını ihlal ediyor." — 3 kullanıcı tarafından işaretlendi.</div>
+      <div class="comment-actions"><button class="btn btn-danger btn-sm" onclick="toast('🚫','İçerik kaldırıldı')">Kaldır</button><button class="btn btn-secondary btn-sm" onclick="toast('✅','Şikayet reddedildi')">Reddet</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CMS EDITOR ══ -->
+<div class="panel" id="panel-cms-editor">
+  <div class="pg-header"><div><div class="pg-title">İçerik Editörü</div><div class="pg-sub">Rich Text & Markdown desteği</div></div><div class="btn-row"><button class="btn btn-secondary" onclick="toggleEditorMode()" id="editor-mode-btn">MD Modu</button><button class="btn btn-secondary" onclick="saveDraft()">📝 Taslak</button><button class="btn btn-primary" onclick="publishPost()">🚀 Yayınla</button></div></div>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:1.25rem;align-items:start">
+    <div class="card">
+      <input class="f-input" id="post-title" placeholder="Yazı başlığını girin…" style="border:none;border-bottom:1px solid var(--border);border-radius:0;padding:1.1rem 1.25rem;font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:700;background:transparent"/>
+      <div class="rte-toolbar" id="rte-bar">
+        <button class="rte-btn" onclick="fmt('bold')"><b>B</b></button>
+        <button class="rte-btn" onclick="fmt('italic')"><i>I</i></button>
+        <button class="rte-btn" onclick="fmt('underline')"><u>U</u></button>
+        <button class="rte-btn" onclick="fmt('strikeThrough')"><s>S</s></button>
+        <div class="rte-sep"></div>
+        <button class="rte-btn" onclick="fmtBlock('h1')">H1</button>
+        <button class="rte-btn" onclick="fmtBlock('h2')">H2</button>
+        <button class="rte-btn" onclick="fmtBlock('h3')">H3</button>
+        <div class="rte-sep"></div>
+        <button class="rte-btn" onclick="fmtBlock('blockquote')">"</button>
+        <button class="rte-btn" onclick="fmt('insertUnorderedList')">•</button>
+        <button class="rte-btn" onclick="fmt('insertOrderedList')">1.</button>
+        <div class="rte-sep"></div>
+        <button class="rte-btn" onclick="insertLink2()">🔗</button>
+        <button class="rte-btn" onclick="toast('📁','Medya ekle')">🖼</button>
+        <button class="rte-btn" onclick="fmtBlock('pre')">⌨</button>
+        <div class="rte-sep"></div>
+        <button class="rte-btn" onclick="fmt('removeFormat')" style="color:var(--text3)">✕</button>
+      </div>
+      <div class="rte-content" id="rte-body" contenteditable="true" data-ph="Yazınızı buraya yazın…"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div class="card"><div class="card-hd"><div class="card-hd-title">📤 Yayın</div></div><div class="card-body"><button class="btn btn-primary btn-full" style="margin-bottom:0.5rem" onclick="publishPost()">🚀 Yayınla</button><button class="btn btn-secondary btn-full" onclick="saveDraft()">📝 Taslak Kaydet</button></div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-title">📋 Yazı Bilgileri</div></div><div class="card-body">
+        <div class="f-row"><label class="f-label">Kategori</label><select class="f-select" id="post-cat"><option value="">Seçin…</option><option>Felsefe</option><option>Bilim</option><option>Sanat & Kültür</option><option>Politika</option></select></div>
+        <div class="f-row"><label class="f-label">Yazar</label><input class="f-input" placeholder="Yazar adı" id="post-auth"/></div>
+        <div class="f-row"><label class="f-label">Okuma Süresi</label><input class="f-input" placeholder="8 dk" id="post-rt"/></div>
+        <div class="f-row"><label class="f-label">Öne Çıkan Görsel URL</label><input class="f-input" placeholder="https://…"/></div>
+        <div class="f-row"><label class="f-label">Meta Açıklaması</label><textarea class="f-textarea" style="min-height:55px" placeholder="SEO açıklaması…"></textarea></div>
+      </div></div>
+      <div class="card"><div class="card-hd"><div class="card-hd-title">🏷 Etiketler</div></div><div class="card-body">
+        <div id="tag-wrap" style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.6rem"><span class="badge badge-violet" style="cursor:pointer" onclick="this.remove()">Felsefe ✕</span><span class="badge badge-teal" style="cursor:pointer" onclick="this.remove()">Determinizm ✕</span></div>
+        <input class="f-input" placeholder="Etiket + Enter" id="tag-inp" style="font-size:0.8rem"/>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MEDIA LIBRARY ══ -->
+<div class="panel" id="panel-cms-media">
+  <div class="pg-header"><div><div class="pg-title">Medya Kütüphanesi</div><div class="pg-sub">28 dosya · 145MB kullanılan</div></div><div class="btn-row"><button class="btn btn-secondary" onclick="toast('✅','Seçili silindi')">🗑 Sil</button><button class="btn btn-primary" onclick="toast('📁','Yükleme başladı')">⬆ Yükle</button></div></div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="card-body" style="padding:0.85rem 1.25rem">
+      <div class="upload-zone" onclick="toast('📁','Dosya seçici açıldı')" style="padding:1.5rem">
+        <div class="upload-zone-icon" style="font-size:2rem">📂</div>
+        <div class="upload-zone-text">Dosyaları sürükleyip bırakın veya tıklayın</div>
+        <div class="upload-zone-sub">JPG, PNG, SVG, WEBP, PDF · Maks 10MB/dosya · Toplu yükleme desteklenir</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:1.25rem">
+    <div class="card-hd"><div class="card-hd-title">🗂 Filtrele</div>
+      <div style="display:flex;gap:0.4rem">
+        <button class="btn btn-accent btn-sm">Tümü</button>
+        <button class="btn btn-secondary btn-sm">Görseller</button>
+        <button class="btn btn-secondary btn-sm">PDF</button>
+        <button class="btn btn-secondary btn-sm">SVG</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-hd-title">📷 Dosyalar</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">3 seçili</div></div>
+    <div class="card-body">
+      <div class="media-grid">
+        <div class="media-item selected" onclick="toggleMedia(this)"><div class="media-thumb">🖼</div><div class="media-name">hero-bg.jpg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item selected" onclick="toggleMedia(this)"><div class="media-thumb">📸</div><div class="media-name">felsefe-og.png</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">🖼</div><div class="media-name">bilim-cover.jpg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">📄</div><div class="media-name">about-team.jpg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item selected" onclick="toggleMedia(this)"><div class="media-thumb">🎨</div><div class="media-name">sanat-banner.svg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">🖼</div><div class="media-name">politika-og.jpg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">📸</div><div class="media-name">logo-dark.svg</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">🖼</div><div class="media-name">favicon.ico</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">📄</div><div class="media-name">press-kit.pdf</div><div class="media-sel-check">✓</div></div>
+        <div class="media-item" onclick="toggleMedia(this)"><div class="media-thumb">🖼</div><div class="media-name">author-1.jpg</div><div class="media-sel-check">✓</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MENU EDITOR ══ -->
+<div class="panel" id="panel-cms-menus">
+  <div class="pg-header"><div><div class="pg-title">Menü Editörü</div><div class="pg-sub">Navbar ve Footer menülerini sürükle-bırak ile düzenleyin</div></div><div class="btn-row"><button class="btn btn-primary" onclick="toast('✅','Menü kaydedildi')">Kaydet</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🔝 Navbar Menüsü</div><button class="btn btn-secondary btn-sm" onclick="addMenuItem('nav-list')">+ Ekle</button></div>
+      <div class="card-body">
+        <ul class="menu-items" id="nav-list">
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">Ana Sayfa</span><input class="f-input" value="/" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">Hakkımızda</span><input class="f-input" value="/hakkimizda" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">Yazılar</span><input class="f-input" value="/yazilar" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">İletişim</span><input class="f-input" value="/iletisim" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">⬇ Footer Menüsü</div><button class="btn btn-secondary btn-sm" onclick="addMenuItem('footer-list')">+ Ekle</button></div>
+      <div class="card-body">
+        <ul class="menu-items" id="footer-list">
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">Gizlilik Politikası</span><input class="f-input" value="/gizlilik" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">Kullanım Şartları</span><input class="f-input" value="/sartlar" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+          <li class="menu-item-row" draggable="true"><span class="menu-handle">⠿</span><span class="menu-item-label">RSS Feed</span><input class="f-input" value="/rss" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ANALYTICS ══ -->
+<div class="panel" id="panel-sys-analytics">
+  <div class="pg-header"><div><div class="pg-title">Analitik & Trafik</div><div class="pg-sub">Gerçek zamanlı ziyaretçi verileri</div></div><div class="btn-row"><span class="live-dot">Canlı · 12 aktif kullanıcı</span></div></div>
+  <div class="stat-cards">
+    <div class="stat-card"><div class="sc-label">Bugün Görüntülenme<span class="sc-icon">👁</span></div><div class="sc-val" id="pv-count">2,847</div><div class="sc-trend up">↑ %18 dün</div></div>
+    <div class="stat-card"><div class="sc-label">Benzersiz Ziyaretçi<span class="sc-icon">🧑</span></div><div class="sc-val">1,204</div><div class="sc-trend up">↑ %9</div></div>
+    <div class="stat-card"><div class="sc-label">Hemen Çıkma<span class="sc-icon">🚪</span></div><div class="sc-val">34<small style="font-size:1rem;color:var(--text3)">%</small></div><div class="sc-trend up">↓ %5 iyileşme</div></div>
+    <div class="stat-card"><div class="sc-label">Ort. Süre<span class="sc-icon">⏱</span></div><div class="sc-val">4:32</div><div class="sc-trend up">↑ 48sn</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">📈 Son 30 Gün Trafik</div></div>
+      <div class="card-body">
+        <div class="chart-bars" id="analytics-chart" style="height:120px">
+          <div class="bar" style="height:30%;background:var(--teal)"></div><div class="bar" style="height:45%;background:var(--teal)"></div><div class="bar" style="height:38%;background:var(--teal)"></div><div class="bar" style="height:60%;background:var(--teal)"></div><div class="bar" style="height:52%;background:var(--teal)"></div><div class="bar" style="height:70%;background:var(--teal)"></div><div class="bar" style="height:85%;background:var(--accent)"></div><div class="bar" style="height:78%;background:var(--teal)"></div><div class="bar" style="height:90%;background:var(--accent)"></div><div class="bar" style="height:65%;background:var(--teal)"></div><div class="bar" style="height:72%;background:var(--teal)"></div><div class="bar" style="height:88%;background:var(--accent)"></div><div class="bar" style="height:95%;background:var(--teal2)"></div><div class="bar" style="height:82%;background:var(--teal)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:0.5rem">
+          <span class="chart-label">1 Şub</span><span class="chart-label">8 Şub</span><span class="chart-label">15 Şub</span><span class="chart-label">22 Şub</span><span class="chart-label">1 Mar</span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">📰 En Çok Okunan</div></div>
+      <div class="card-body" style="padding:0.75rem 1.25rem">
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Özgür İrade Yanılsaması</span><span class="pbar-val">4.2k</span></div><div class="pbar-track"><div class="pbar-fill" style="width:95%;background:var(--violet)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Kuantum Mekaniği</span><span class="pbar-val">3.1k</span></div><div class="pbar-track"><div class="pbar-fill" style="width:74%;background:var(--teal)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Soyut Sanat</span><span class="pbar-val">2.4k</span></div><div class="pbar-track"><div class="pbar-fill" style="width:57%;background:var(--accent)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Popülizm Analizi</span><span class="pbar-val">1.8k</span></div><div class="pbar-track"><div class="pbar-fill" style="width:43%;background:var(--blue)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">YZ & Ahlak Felsefesi</span><span class="pbar-val">1.2k</span></div><div class="pbar-track"><div class="pbar-fill" style="width:29%;background:var(--green)"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PERFORMANCE ══ -->
+<div class="panel" id="panel-sys-performance">
+  <div class="pg-header"><div><div class="pg-title">Performans & İzleme</div><div class="pg-sub">Sunucu sağlığı, yanıt süreleri ve API limitleri</div></div><div class="btn-row"><button class="btn btn-danger" onclick="clearCache()">🗑 Cache Temizle</button><button class="btn btn-primary" onclick="toast('🔄','Metrikler yenilendi')">↻ Yenile</button></div></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">⚡ Yanıt Süreleri (ms)</div><span class="live-dot">Canlı</span></div>
+      <div class="card-body">
+        <div class="perf-row"><span class="perf-label">Ana Sayfa (GET /)</span><span class="perf-val perf-good">98ms</span></div>
+        <div class="perf-row"><span class="perf-label">Blog Listesi (GET /api/posts)</span><span class="perf-val perf-good">142ms</span></div>
+        <div class="perf-row"><span class="perf-label">Tek Yazı (GET /api/posts/:id)</span><span class="perf-val perf-good">118ms</span></div>
+        <div class="perf-row"><span class="perf-label">Yorum Gönder (POST /api/comments)</span><span class="perf-val perf-warn">287ms</span></div>
+        <div class="perf-row"><span class="perf-label">Medya Yükleme (POST /api/upload)</span><span class="perf-val perf-bad">1240ms</span></div>
+        <div class="perf-row"><span class="perf-label">DB Sorgu Ortalaması</span><span class="perf-val perf-good">34ms</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-title">🖥 Sunucu Kaynakları</div></div>
+      <div class="card-body">
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">CPU Kullanımı</span><span class="pbar-val">23%</span></div><div class="pbar-track"><div class="pbar-fill" style="width:23%;background:var(--green)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">RAM (2.1 / 8GB)</span><span class="pbar-val">26%</span></div><div class="pbar-track"><div class="pbar-fill" style="width:26%;background:var(--teal)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Disk (45 / 100GB)</span><span class="pbar-val">45%</span></div><div class="pbar-track"><div class="pbar-fill" style="width:45%;background:var(--accent)"></div></div></div>
+        <div class="pbar-wrap"><div class="pbar-hd"><span class="pbar-lbl">Cache Doluluk (234MB)</span><span class="pbar-val">47%</span></div><div class="pbar-track"><div class="pbar-fill" style="width:47%;background:var(--violet)"></div></div></div>
+        <div class="sep"></div>
+        <div class="perf-row"><span class="perf-label">API İstek Limiti (dk)</span><span class="perf-val perf-warn">87/100</span></div>
+        <div class="perf-row"><span class="perf-label">Aktif DB Bağlantısı</span><span class="perf-val perf-good">12/50</span></div>
+        <div class="perf-row"><span class="perf-label">Uptime</span><span class="perf-val perf-good">99.98%</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:1.25rem">
+    <div class="card-hd"><div class="card-hd-title">🌐 Core Web Vitals</div><a href="#" onclick="toast('📊','Rapor açıldı')" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--teal2)">Tam Rapor →</a></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
+        <div style="text-align:center;padding:1rem;background:var(--surface2);border-radius:var(--radius)"><div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:0.4rem">LCP</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green)">1.8s</div><div style="font-size:0.7rem;color:var(--green2)">İyi</div></div>
+        <div style="text-align:center;padding:1rem;background:var(--surface2);border-radius:var(--radius)"><div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:0.4rem">FID</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green)">48ms</div><div style="font-size:0.7rem;color:var(--green2)">İyi</div></div>
+        <div style="text-align:center;padding:1rem;background:var(--surface2);border-radius:var(--radius)"><div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:0.4rem">CLS</div><div style="font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--accent)">0.12</div><div style="font-size:0.7rem;color:var(--accent2)">Orta</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ERROR LOGS ══ -->
+<div class="panel" id="panel-sys-logs">
+  <div class="pg-header"><div><div class="pg-title">Hata Logları & İzleme</div><div class="pg-sub">Sistem olayları ve hata takibi</div></div><div class="btn-row"><select class="f-select" style="width:auto;padding:0.4rem 0.75rem"><option>Tüm Seviyeler</option><option>ERROR</option><option>WARN</option><option>INFO</option></select><button class="btn btn-danger btn-sm" onclick="toast('🗑','Loglar temizlendi')">Logları Temizle</button></div></div>
+  <div class="card">
+    <div class="card-body" style="padding:0.75rem 1.25rem">
+      <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">POST /api/upload — 413 Payload Too Large<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">at multer/lib/make-error.js:22 · User: mehmet@etkikomun.com</span></div><span class="log-time">14:22</span></div>
+      <div class="log-item"><span class="log-lvl log-warn">WARN</span><div class="log-msg">Rate limit threshold reached: /api/comments (87/100 req/min)<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">IP: 185.20.14.200 · Auto-throttling aktif</span></div><span class="log-time">14:18</span></div>
+      <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">DB connection timeout: Query exceeded 3000ms<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Query: SELECT * FROM posts WHERE category=? ORDER BY… · Retried: 2x</span></div><span class="log-time">13:55</span></div>
+      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">Cache cleared successfully — 234MB freed<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Redis · Triggered by: admin@etkikomun.com</span></div><span class="log-time">13:30</span></div>
+      <div class="log-item"><span class="log-lvl log-warn">WARN</span><div class="log-msg">Spam comment detected and quarantined<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Post ID: #47 · Score: 0.94 · Model: akismet-v3</span></div><span class="log-time">12:44</span></div>
+      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">New user registration: ali.k@example.com<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Role: user · IP: 78.162.44.20 · Email verified: false</span></div><span class="log-time">11:12</span></div>
+      <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">SendGrid API: 429 Too Many Requests<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Email queue paused · Retry in 60s · Queue: 12 pending</span></div><span class="log-time">10:08</span></div>
+      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">Post published: "Özgür İrade Yanılsaması" (ID: #52)<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Author: Ayşe Yılmaz · Category: Felsefe · Cache busted</span></div><span class="log-time">09:30</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DB SCHEMA ══ -->
+<div class="panel" id="panel-arch-schema">
+  <div class="pg-header"><div><div class="pg-title">Veritabanı Şeması (Öneri)</div><div class="pg-sub">PostgreSQL / MySQL · Etki Komün için normalize edilmiş şema</div></div></div>
+  <div class="grid-2">
+    <div><div class="card" style="margin-bottom:1.25rem"><div class="card-hd"><div class="card-hd-title">👥 users</div><span class="badge badge-teal">Ana Tablo</span></div><div class="card-body"><pre class="schema-box"><span class="schema-key">id</span>           <span class="schema-type">UUID PRIMARY KEY</span>
+<span class="schema-key">email</span>        <span class="schema-type">VARCHAR(255) UNIQUE NOT NULL</span>
+<span class="schema-key">username</span>     <span class="schema-type">VARCHAR(80) UNIQUE NOT NULL</span>
+<span class="schema-key">password_hash</span><span class="schema-type">VARCHAR(255) NOT NULL</span>
+<span class="schema-key">role</span>         <span class="schema-type">ENUM(superadmin,editor,moderator,user)</span>
+<span class="schema-key">status</span>       <span class="schema-type">ENUM(active,pending,banned)</span>
+<span class="schema-key">avatar_url</span>   <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">bio</span>          <span class="schema-type">TEXT</span>
+<span class="schema-key">is_verified</span>  <span class="schema-type">BOOLEAN DEFAULT false</span>
+<span class="schema-key">last_login_at</span><span class="schema-type">TIMESTAMP</span>
+<span class="schema-key">created_at</span>   <span class="schema-type">TIMESTAMP DEFAULT NOW()</span>
+<span class="schema-key">updated_at</span>   <span class="schema-type">TIMESTAMP</span></pre></div></div>
+    <div class="card" style="margin-bottom:1.25rem"><div class="card-hd"><div class="card-hd-title">📝 posts</div><span class="badge badge-teal">Ana Tablo</span></div><div class="card-body"><pre class="schema-box"><span class="schema-key">id</span>           <span class="schema-type">UUID PRIMARY KEY</span>
+<span class="schema-key">title</span>        <span class="schema-type">VARCHAR(500) NOT NULL</span>
+<span class="schema-key">slug</span>         <span class="schema-type">VARCHAR(500) UNIQUE NOT NULL</span>
+<span class="schema-key">content</span>      <span class="schema-type">LONGTEXT</span>
+<span class="schema-key">excerpt</span>      <span class="schema-type">TEXT</span>
+<span class="schema-key">status</span>       <span class="schema-type">ENUM(draft,review,published,archived)</span>
+<span class="schema-key">category_id</span>  <span class="schema-type">UUID FK → categories.id</span>
+<span class="schema-key">author_id</span>    <span class="schema-type">UUID FK → users.id</span>
+<span class="schema-key">cover_url</span>    <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">read_time</span>    <span class="schema-type">INT</span> <span class="schema-comment">-- dakika</span>
+<span class="schema-key">view_count</span>   <span class="schema-type">INT DEFAULT 0</span>
+<span class="schema-key">meta_title</span>   <span class="schema-type">VARCHAR(255)</span>
+<span class="schema-key">meta_desc</span>    <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">published_at</span> <span class="schema-type">TIMESTAMP</span>
+<span class="schema-key">created_at</span>   <span class="schema-type">TIMESTAMP DEFAULT NOW()</span></pre></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">💬 comments</div></div><div class="card-body"><pre class="schema-box"><span class="schema-key">id</span>           <span class="schema-type">UUID PRIMARY KEY</span>
+<span class="schema-key">post_id</span>      <span class="schema-type">UUID FK → posts.id</span>
+<span class="schema-key">user_id</span>      <span class="schema-type">UUID FK → users.id</span>
+<span class="schema-key">parent_id</span>    <span class="schema-type">UUID FK → comments.id</span> <span class="schema-comment">-- yanıt</span>
+<span class="schema-key">body</span>         <span class="schema-type">TEXT NOT NULL</span>
+<span class="schema-key">status</span>       <span class="schema-type">ENUM(pending,approved,spam,deleted)</span>
+<span class="schema-key">spam_score</span>   <span class="schema-type">FLOAT</span>
+<span class="schema-key">ip_address</span>   <span class="schema-type">VARCHAR(45)</span>
+<span class="schema-key">created_at</span>   <span class="schema-type">TIMESTAMP DEFAULT NOW()</span></pre></div></div></div>
+    <div><div class="card" style="margin-bottom:1.25rem"><div class="card-hd"><div class="card-hd-title">🌐 site_settings</div><span class="badge badge-violet">Tekil Satır</span></div><div class="card-body"><pre class="schema-box"><span class="schema-key">id</span>              <span class="schema-type">INT DEFAULT 1</span>
+<span class="schema-key">site_title</span>      <span class="schema-type">VARCHAR(255)</span>
+<span class="schema-key">site_description</span><span class="schema-type">TEXT</span>
+<span class="schema-key">favicon_url</span>     <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">logo_dark_url</span>   <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">logo_light_url</span>  <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">maintenance_mode</span><span class="schema-type">BOOLEAN DEFAULT false</span>
+<span class="schema-key">maintenance_msg</span> <span class="schema-type">TEXT</span>
+<span class="schema-key">default_language</span><span class="schema-type">VARCHAR(10) DEFAULT 'tr'</span>
+<span class="schema-key">timezone</span>        <span class="schema-type">VARCHAR(60)</span>
+<span class="schema-key">theme_mode</span>      <span class="schema-type">ENUM(dark,light,system)</span>
+<span class="schema-key">meta_keywords</span>   <span class="schema-type">TEXT</span>
+<span class="schema-key">og_image_url</span>    <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">updated_at</span>      <span class="schema-type">TIMESTAMP</span></pre></div></div>
+    <div class="card" style="margin-bottom:1.25rem"><div class="card-hd"><div class="card-hd-title">🎨 theme_config</div><span class="badge badge-violet">Tekil Satır</span></div><div class="card-body"><pre class="schema-box"><span class="schema-key">id</span>           <span class="schema-type">INT DEFAULT 1</span>
+<span class="schema-key">color_primary</span>  <span class="schema-type">VARCHAR(7)</span> <span class="schema-comment">-- hex</span>
+<span class="schema-key">color_secondary</span><span class="schema-type">VARCHAR(7)</span>
+<span class="schema-key">color_accent</span>   <span class="schema-type">VARCHAR(7)</span>
+<span class="schema-key">color_bg</span>       <span class="schema-type">VARCHAR(7)</span>
+<span class="schema-key">font_display</span>   <span class="schema-type">VARCHAR(100)</span>
+<span class="schema-key">font_body</span>      <span class="schema-type">VARCHAR(100)</span>
+<span class="schema-key">font_size_base</span> <span class="schema-type">INT DEFAULT 15</span>
+<span class="schema-key">line_height</span>    <span class="schema-type">FLOAT DEFAULT 1.75</span>
+<span class="schema-key">navbar_json</span>    <span class="schema-type">JSON</span> <span class="schema-comment">-- menü öğeleri</span>
+<span class="schema-key">footer_json</span>    <span class="schema-type">JSON</span>
+<span class="schema-key">updated_at</span>     <span class="schema-type">TIMESTAMP</span></pre></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">📁 media & 🏷 tags</div></div><div class="card-body"><pre class="schema-box"><span class="schema-comment">-- media</span>
+<span class="schema-key">id</span>           <span class="schema-type">UUID PRIMARY KEY</span>
+<span class="schema-key">filename</span>     <span class="schema-type">VARCHAR(255)</span>
+<span class="schema-key">url</span>          <span class="schema-type">VARCHAR(500)</span>
+<span class="schema-key">mime_type</span>    <span class="schema-type">VARCHAR(100)</span>
+<span class="schema-key">size_bytes</span>   <span class="schema-type">INT</span>
+<span class="schema-key">alt_text</span>     <span class="schema-type">VARCHAR(255)</span>
+<span class="schema-key">uploaded_by</span>  <span class="schema-type">UUID FK → users.id</span>
+
+<span class="schema-comment">-- tags + post_tags (pivot)</span>
+<span class="schema-key">id</span>           <span class="schema-type">UUID PRIMARY KEY</span>
+<span class="schema-key">name</span>         <span class="schema-type">VARCHAR(80) UNIQUE</span>
+<span class="schema-key">slug</span>         <span class="schema-type">VARCHAR(80) UNIQUE</span>
+<span class="schema-key">color</span>        <span class="schema-type">VARCHAR(7)</span></pre></div></div></div>
+  </div>
+</div>
+
+<!-- ══ STATE MANAGEMENT ══ -->
+<div class="panel" id="panel-arch-state">
+  <div class="pg-header"><div><div class="pg-title">State Yönetimi Mimarisi</div><div class="pg-sub">Temel store yapısı ve veri akışı</div></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-hd"><div class="card-hd-title">⚛ Global Store (Zustand / Redux)</div></div><div class="card-body"><pre class="schema-box"><span class="schema-comment">// store/index.ts</span>
+<span class="schema-key">GlobalStore</span> {
+  <span class="schema-comment">// Auth</span>
+  <span class="schema-key">auth</span>: {
+    user: <span class="schema-type">User | null</span>
+    token: <span class="schema-type">string | null</span>
+    role: <span class="schema-type">Role</span>
+    isLoading: <span class="schema-type">boolean</span>
+  }
+
+  <span class="schema-comment">// Site Ayarları</span>
+  <span class="schema-key">settings</span>: {
+    meta: <span class="schema-type">SiteMetaState</span>
+    theme: <span class="schema-type">ThemeState</span>
+    maintenance: <span class="schema-type">MaintenanceState</span>
+    i18n: <span class="schema-type">I18nState</span>
+    isDirty: <span class="schema-type">boolean</span>
+    isSaving: <span class="schema-type">boolean</span>
+  }
+
+  <span class="schema-comment">// CMS</span>
+  <span class="schema-key">cms</span>: {
+    posts: <span class="schema-type">Post[]</span>
+    currentPost: <span class="schema-type">Post | null</span>
+    media: <span class="schema-type">MediaFile[]</span>
+    menus: <span class="schema-type">MenuState</span>
+    pagination: <span class="schema-type">PaginationState</span>
+  }
+
+  <span class="schema-comment">// RBAC</span>
+  <span class="schema-key">rbac</span>: {
+    users: <span class="schema-type">User[]</span>
+    roles: <span class="schema-type">RolePermissions</span>
+    pendingModeration: <span class="schema-type">Comment[]</span>
+  }
+
+  <span class="schema-comment">// Analytics</span>
+  <span class="schema-key">analytics</span>: {
+    liveUsers: <span class="schema-type">number</span>
+    pageViews: <span class="schema-type">TimeSeriesData</span>
+    topPosts: <span class="schema-type">PostStat[]</span>
+    lastUpdated: <span class="schema-type">Date</span>
+  }
+
+  <span class="schema-comment">// System</span>
+  <span class="schema-key">system</span>: {
+    logs: <span class="schema-type">LogEntry[]</span>
+    performance: <span class="schema-type">PerfMetrics</span>
+    cacheStatus: <span class="schema-type">CacheState</span>
+    alerts: <span class="schema-type">Alert[]</span>
+  }
+}</pre></div></div>
+    <div><div class="card" style="margin-bottom:1.25rem"><div class="card-hd"><div class="card-hd-title">🔄 Veri Akışı</div></div><div class="card-body"><pre class="schema-box"><span class="schema-comment">// API → Store → UI akışı</span>
+
+<span class="schema-type">UI Component</span>
+  → dispatch(action)
+  → <span class="schema-key">Thunk / Saga</span> (async)
+    → <span class="schema-type">API call (/api/v1/...)</span>
+    → JWT ile auth header
+    → Response normalize
+  → <span class="schema-key">Reducer</span> state güncelle
+  → <span class="schema-type">Selector</span> memoize
+  → <span class="schema-type">UI re-render</span>
+
+<span class="schema-comment">// Real-time (WebSocket)</span>
+<span class="schema-key">WS</span>('/ws/analytics')
+  → analytics.liveUsers güncelle
+  → analytics.pageViews push
+
+<span class="schema-key">WS</span>('/ws/notifications')
+  → system.alerts push
+  → rbac.pendingModeration</pre></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">🔐 Yetki Kontrol Katmanı</div></div><div class="card-body"><pre class="schema-box"><span class="schema-comment">// hooks/usePermission.ts</span>
+<span class="schema-key">PermissionMap</span>[role][action]:
+
+superadmin → <span class="schema-type">*</span> (tümü)
+editor     → <span class="schema-type">posts.*</span>
+             <span class="schema-type">media.*</span>
+             <span class="schema-type">comments.read</span>
+moderator  → <span class="schema-type">posts.read, posts.edit</span>
+             <span class="schema-type">comments.*</span>
+             <span class="schema-type">users.ban</span>
+user       → <span class="schema-type">profile.edit</span>
+             <span class="schema-type">comments.create</span>
+
+<span class="schema-comment">// Route guard örneği</span>
+if (!can('posts.publish'))
+  redirect('/unauthorized')</pre></div></div></div>
+  </div>
+</div>
+
+<!-- ══ COMPONENT TREE ══ -->
+<div class="panel" id="panel-arch-components">
+  <div class="pg-header"><div><div class="pg-title">Bileşen Ağacı</div><div class="pg-sub">React/Next.js proje yapısı ve component hiyerarşisi</div></div></div>
+  <div class="grid-2">
+    <div class="card"><div class="card-hd"><div class="card-hd-title">🌳 Ana Uygulama Ağacı</div></div><div class="card-body"><pre class="schema-box"><span class="schema-key">App</span>
+├── <span class="schema-type">AuthProvider</span>
+│   └── <span class="schema-key">AdminLayout</span>
+│       ├── <span class="schema-key">Sidebar</span>
+│       │   ├── SidebarLogo
+│       │   ├── SidebarNav
+│       │   │   └── NavItem[]
+│       │   └── SidebarFooter
+│       ├── <span class="schema-key">Topbar</span>
+│       │   ├── Breadcrumb
+│       │   ├── SystemStatus
+│       │   └── TopbarActions
+│       └── <span class="schema-key">ContentArea</span>
+│           ├── <span class="schema-type">DashboardPanel</span>
+│           ├── <span class="schema-type">GlobalSettingsPanel</span>
+│           │   ├── MetaForm
+│           │   ├── MaintenanceControl
+│           │   └── I18nManager
+│           ├── <span class="schema-type">ThemeEnginePanel</span>
+│           │   ├── ColorPaletteEditor
+│           │   ├── TypographySettings
+│           │   ├── ThemeModeToggle
+│           │   └── BrandingUploader
+│           ├── <span class="schema-type">RBACPanel</span>
+│           │   ├── UserTable
+│           │   ├── RoleEditor
+│           │   └── ModerationQueue
+│           ├── <span class="schema-type">CMSPanel</span>
+│           │   ├── RichTextEditor
+│           │   │   ├── Toolbar
+│           │   │   └── ContentArea
+│           │   ├── MediaLibrary
+│           │   │   ├── UploadZone
+│           │   │   └── MediaGrid
+│           │   └── MenuEditor
+│           │       └── DragDropList
+│           └── <span class="schema-type">MonitoringPanel</span>
+│               ├── AnalyticsCharts
+│               ├── PerformanceMetrics
+│               └── ErrorLogViewer</pre></div></div>
+    <div class="card"><div class="card-hd"><div class="card-hd-title">📁 Dizin Yapısı</div></div><div class="card-body"><pre class="schema-box"><span class="schema-key">src/</span>
+├── <span class="schema-type">app/</span>          <span class="schema-comment"># Next.js App Router</span>
+│   ├── (admin)/
+│   │   ├── layout.tsx
+│   │   ├── dashboard/
+│   │   ├── settings/
+│   │   ├── theme/
+│   │   ├── users/
+│   │   ├── cms/
+│   │   └── monitor/
+│   └── api/
+│       ├── auth/
+│       ├── posts/
+│       ├── users/
+│       ├── media/
+│       └── settings/
+├── <span class="schema-type">components/</span>
+│   ├── ui/           <span class="schema-comment"># Button, Input, Card…</span>
+│   ├── layout/       <span class="schema-comment"># Sidebar, Topbar…</span>
+│   ├── editor/       <span class="schema-comment"># RTE, MediaLib…</span>
+│   ├── charts/       <span class="schema-comment"># BarChart, LineChart</span>
+│   └── rbac/         <span class="schema-comment"># UserTable, RoleEditor</span>
+├── <span class="schema-type">store/</span>
+│   ├── authSlice.ts
+│   ├── settingsSlice.ts
+│   ├── cmsSlice.ts
+│   ├── rbacSlice.ts
+│   └── analyticsSlice.ts
+├── <span class="schema-type">hooks/</span>
+│   ├── usePermission.ts
+│   ├── useAnalytics.ts
+│   └── useWebSocket.ts
+├── <span class="schema-type">lib/</span>
+│   ├── api.ts
+│   ├── auth.ts
+│   └── db.ts
+└── <span class="schema-type">types/</span>
+    ├── user.d.ts
+    ├── post.d.ts
+    └── theme.d.ts</pre></div></div></div>
+  </div>
+</div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ═══ MODALS ═══ -->
+<div class="modal-bg" id="modal-cache">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">🗑 Cache Temizle</div><button class="modal-close" onclick="closeModal('modal-cache')">✕</button></div>
+    <div class="modal-body">
+      <p style="font-size:0.88rem;color:var(--text2);margin-bottom:1.25rem">Hangi cache katmanlarını temizlemek istiyorsunuz?</p>
+      <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Redis Cache (234MB)</div><div class="t-desc">API yanıt önbelleği</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+      <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">Statik Asset Cache</div><div class="t-desc">Görsel ve CSS önbelleği</div></div><label class="toggle"><input type="checkbox" checked><span class="tslider"></span></label></div>
+      <div class="toggle-wrap"><div class="toggle-info"><div class="t-name">CDN Cache</div><div class="t-desc">Cloudflare edge önbelleği</div></div><label class="toggle"><input type="checkbox"><span class="tslider"></span></label></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeModal('modal-cache')">İptal</button><button class="btn btn-danger" onclick="clearCache()">🗑 Temizle</button></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-new-user">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">👤 Yeni Kullanıcı Ekle</div><button class="modal-close" onclick="closeModal('modal-new-user')">✕</button></div>
+    <div class="modal-body">
+      <div class="f-row"><label class="f-label">Ad Soyad</label><input class="f-input" placeholder="Adı Soyadı"/></div>
+      <div class="f-row"><label class="f-label">E-posta</label><input class="f-input" type="email" placeholder="kullanici@example.com"/></div>
+      <div class="f-row"><label class="f-label">Rol</label><select class="f-select"><option>Kullanıcı</option><option>Moderatör</option><option>Editör</option><option>Super Admin</option></select></div>
+      <div class="f-row"><label class="f-label">Geçici Şifre</label><input class="f-input" type="password" placeholder="En az 8 karakter"/></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeModal('modal-new-user')">İptal</button><button class="btn btn-primary" onclick="closeModal('modal-new-user');toast('✅','Kullanıcı oluşturuldu')">Oluştur</button></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-edit-user">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">✏️ Kullanıcı Düzenle</div><button class="modal-close" onclick="closeModal('modal-edit-user')">✕</button></div>
+    <div class="modal-body">
+      <div class="f-row"><label class="f-label">Ad Soyad</label><input class="f-input" value="Ayşe Yılmaz"/></div>
+      <div class="f-row"><label class="f-label">E-posta</label><input class="f-input" value="ayse@etkikomun.com"/></div>
+      <div class="f-row"><label class="f-label">Rol</label><select class="f-select"><option>Kullanıcı</option><option>Moderatör</option><option selected>Editör</option><option>Super Admin</option></select></div>
+      <div class="f-row"><label class="f-label">Durum</label><select class="f-select"><option>Aktif</option><option>Beklemede</option><option>Banlı</option></select></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-secondary" onclick="closeModal('modal-edit-user')">İptal</button><button class="btn btn-primary" onclick="closeModal('modal-edit-user');toast('✅','Kullanıcı güncellendi')">Kaydet</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast-el">
+  <span class="toast-icon" id="toast-icon">✅</span>
+  <span class="toast-text" id="toast-text">İşlem tamamlandı</span>
+  <span class="toast-close" onclick="document.getElementById('toast-el').classList.remove('show')">✕</span>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// STATE MANAGEMENT (Mini Store)
+// ═══════════════════════════════════
+const state = {
+  currentPanel: 'dashboard',
+  maintenanceActive: false,
+  colorPresets: {
+    default: {accent:'#c9a84c',teal:'#2a7f6f',violet:'#6b5cc4',earth:'#8b6a42',bg:'#0f0e0c',cream:'#f5f0e8'},
+    ocean:   {accent:'#2eb5d4',teal:'#1a6b8a',violet:'#0d3d52',earth:'#3a8fa8',bg:'#071520',cream:'#e8f4f8'},
+    ember:   {accent:'#e8864c',teal:'#c94c2a',violet:'#6b2210',earth:'#a04030',bg:'#1a0800',cream:'#fdf0e8'},
+    forest:  {accent:'#a8c256',teal:'#3a7d44',violet:'#1e4d2b',earth:'#6b8c3a',bg:'#060e07',cream:'#f0f5e8'},
+  },
+  analytics: { liveUsers: 12, pageViews: 2847 },
+};
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+const PAGE_TITLES = {
+  'dashboard':'Dashboard','global-meta':'Site Metadata & SEO','global-maintenance':'Bakım Modu',
+  'global-i18n':'Dil & i18n','theme-colors':'Renk Paleti','theme-typography':'Tipografi',
+  'theme-mode':'Tema Modu','theme-branding':'Logo & Marka','rbac-users':'Kullanıcı Yönetimi',
+  'rbac-roles':'Rol Yönetimi','rbac-moderation':'Moderasyon','cms-editor':'İçerik Editörü',
+  'cms-media':'Medya Kütüphanesi','cms-menus':'Menü Editörü','sys-analytics':'Analitik',
+  'sys-performance':'Performans','sys-logs':'Hata Logları','arch-schema':'DB Şeması',
+  'arch-state':'State Yönetimi','arch-components':'Bileşen Ağacı',
+};
+
+function nav(id) {
+  document.querySelectorAll('.sb-item').forEach(n => n.classList.remove('active'));
+  const item = document.querySelector(`[data-panel="${id}"]`);
+  if (item) item.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById(`panel-${id}`);
+  if (panel) panel.classList.add('active');
+  const title = PAGE_TITLES[id] || id;
+  document.getElementById('tb-title').textContent = title;
+  document.getElementById('tb-crumb').innerHTML = `<span>EtkiKomün</span> › <span>${title}</span>`;
+  state.currentPanel = id;
+}
+document.querySelectorAll('.sb-item').forEach(item => {
+  item.addEventListener('click', () => nav(item.dataset.panel));
+});
+
+// ═══════════════════════════════════
+// TOAST
+// ═══════════════════════════════════
+let toastTimer;
+function toast(icon, msg) {
+  clearTimeout(toastTimer);
+  const el = document.getElementById('toast-el');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-text').textContent = msg;
+  el.classList.add('show');
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ═══════════════════════════════════
+// MODALS
+// ═══════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
+});
+
+// ═══════════════════════════════════
+// MAINTENANCE MODE
+// ═══════════════════════════════════
+function toggleMaintenance() {
+  state.maintenanceActive = !state.maintenanceActive;
+  const btn = document.getElementById('maint-toggle-btn');
+  const icon = document.getElementById('maint-icon');
+  const txt = document.getElementById('maint-status-text');
+  const sub = document.getElementById('maint-sub-text');
+  if (state.maintenanceActive) {
+    btn.textContent = '✅ Bakım Modunu Kapat'; btn.className = 'btn btn-primary btn-lg';
+    icon.textContent = '🔧'; txt.textContent = 'Bakım Modu Aktif'; sub.textContent = 'Site ziyaretçilere kapalı';
+    toast('🔧', 'Bakım modu aktif edildi');
+  } else {
+    btn.textContent = '🔧 Bakım Modunu Aç'; btn.className = 'btn btn-danger btn-lg';
+    icon.textContent = '✅'; txt.textContent = 'Site Aktif'; sub.textContent = 'Tüm ziyaretçiler siteye erişebiliyor';
+    toast('✅', 'Bakım modu kapatıldı');
+  }
+}
+
+// ═══════════════════════════════════
+// COLOR PALETTE
+// ═══════════════════════════════════
+function liveSwatch(swId, val) {
+  if (/^#[0-9A-Fa-f]{3,6}$/.test(val)) document.getElementById(swId).style.background = val;
+}
+function applyPreset(name, card) {
+  document.querySelectorAll('[id^="pt-"]').forEach(c => c.style.borderColor = 'var(--border)');
+  if (card) card.style.borderColor = 'var(--accent)';
+  const p = state.colorPresets[name]; if (!p) return;
+  const map = {accent:'ci-accent',teal:'ci-teal',violet:'ci-violet',earth:'ci-earth',bg:'ci-bg',cream:'ci-cream'};
+  const swMap = {accent:'sw-accent',teal:'sw-teal',violet:'sw-violet',earth:'sw-earth',bg:'sw-bg',cream:'sw-cream'};
+  Object.keys(p).forEach(k => {
+    if (map[k]) { const el = document.getElementById(map[k]); if(el){ el.value=p[k]; } }
+    if (swMap[k]) { const el = document.getElementById(swMap[k]); if(el){ el.style.background=p[k]; } }
+  });
+  updateColorPreview(p);
+  toast('🎨', `"${name}" teması yüklendi`);
+}
+function updateColorPreview(p) {
+  if (!p) {
+    p = {
+      accent: document.getElementById('ci-accent')?.value || '#c9a84c',
+      teal: document.getElementById('ci-teal')?.value || '#2a7f6f',
+      cream: document.getElementById('ci-cream')?.value || '#f5f0e8',
+      bg: document.getElementById('ci-bg')?.value || '#0f0e0c',
+    };
+  }
+  const box = document.getElementById('color-preview');
+  if(box) box.style.background = p.bg || '#0f0e0c';
+  const t1 = document.getElementById('pv-t1'); if(t1) t1.style.color = p.cream || '#f5f0e8';
+  const t2 = document.getElementById('pv-t2'); if(t2) t2.style.color = p.accent || '#c9a84c';
+  const ey = document.getElementById('pv-eyebrow'); if(ey) ey.style.color = p.teal || '#2a7f6f';
+  const b1 = document.getElementById('pv-btn1'); if(b1){ b1.style.background=p.teal||'#2a7f6f'; b1.style.color='white'; }
+  const b2 = document.getElementById('pv-btn2'); if(b2){ b2.style.borderColor=p.accent||'#c9a84c'; b2.style.color=p.accent||'#c9a84c'; b2.style.background='transparent'; }
+}
+function applyColorPalette() { updateColorPreview(); toast('✅', 'Renk paleti uygulandı & kaydedildi'); }
+function resetColors() { applyPreset('default', document.getElementById('pt-default')); toast('↺', 'Renkler sıfırlandı'); }
+function copyHex(hex) { navigator.clipboard?.writeText(hex).then(() => toast('📋', `${hex} kopyalandı`)); }
+function exportCSS() {
+  const a=document.getElementById('ci-accent')?.value||'#c9a84c';
+  const t=document.getElementById('ci-teal')?.value||'#2a7f6f';
+  const v=document.getElementById('ci-violet')?.value||'#6b5cc4';
+  const css=`:root {\n  --color-accent: ${a};\n  --color-teal: ${t};\n  --color-violet: ${v};\n}`;
+  navigator.clipboard?.writeText(css).then(() => toast('📋', 'CSS değişkenleri kopyalandı'));
+}
+
+// ═══════════════════════════════════
+// THEME MODE
+// ═══════════════════════════════════
+function selectMode(card, mode) {
+  document.querySelectorAll('[id^="mode-"]').forEach(c => { c.style.borderColor='var(--border)'; c.querySelector('div:last-child').textContent='Pasif'; });
+  card.style.borderColor='var(--accent)'; card.querySelector('div:last-child').textContent='Seçili';
+  toast('◑', `Tema modu: ${mode}`);
+}
+
+// ═══════════════════════════════════
+// CMS EDITOR
+// ═══════════════════════════════════
+function fmt(cmd) { document.execCommand(cmd, false, null); }
+function fmtBlock(tag) { document.execCommand('formatBlock', false, tag); }
+function insertLink2() { const u=prompt('URL:'); if(u) document.execCommand('createLink',false,u); }
+function publishPost() {
+  const t = document.getElementById('post-title')?.value?.trim();
+  if (!t) { toast('⚠️', 'Başlık boş olamaz'); return; }
+  toast('🚀', `"${t.substring(0,30)}…" yayınlandı`);
+}
+function saveDraft() {
+  const t = document.getElementById('post-title')?.value?.trim() || 'Başlıksız';
+  toast('📝', `"${t.substring(0,30)}" taslak kaydedildi`);
+}
+let editorMdMode = false;
+function toggleEditorMode() {
+  editorMdMode = !editorMdMode;
+  document.getElementById('editor-mode-btn').textContent = editorMdMode ? 'RTE Modu' : 'MD Modu';
+  document.getElementById('rte-bar').style.display = editorMdMode ? 'none' : '';
+  toast('⌨', editorMdMode ? 'Markdown modu açık' : 'Rich Text modu açık');
+}
+document.getElementById('tag-inp')?.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && this.value.trim()) {
+    e.preventDefault();
+    const chip = document.createElement('span');
+    chip.className = 'badge badge-teal'; chip.style.cursor = 'pointer';
+    chip.textContent = this.value.trim() + ' ✕';
+    chip.onclick = () => chip.remove();
+    document.getElementById('tag-wrap').appendChild(chip);
+    this.value = '';
+  }
+});
+
+// ═══════════════════════════════════
+// MEDIA LIBRARY
+// ═══════════════════════════════════
+function toggleMedia(el) { el.classList.toggle('selected'); }
+
+// ═══════════════════════════════════
+// MENU DRAG & DROP
+// ═══════════════════════════════════
+function setupDrag(listId) {
+  const list = document.getElementById(listId); if (!list) return;
+  let dragging = null;
+  list.addEventListener('dragstart', e => { dragging = e.target.closest('li'); if(dragging) dragging.classList.add('dragging'); });
+  list.addEventListener('dragend', () => { if(dragging) dragging.classList.remove('dragging'); dragging = null; });
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    const after = [...list.querySelectorAll('li:not(.dragging)')].reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = e.clientY - box.top - box.height / 2;
+      return (offset < 0 && offset > closest.offset) ? { offset, element: child } : closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+    if (dragging) { if (after) list.insertBefore(dragging, after); else list.appendChild(dragging); }
+  });
+}
+function addMenuItem(listId) {
+  const list = document.getElementById(listId); if (!list) return;
+  const li = document.createElement('li'); li.className = 'menu-item-row'; li.draggable = true;
+  li.innerHTML = `<span class="menu-handle">⠿</span><span class="menu-item-label">Yeni Öğe</span><input class="f-input" value="/yeni" style="max-width:120px;padding:0.3rem 0.5rem;font-size:0.75rem"/><button class="btn btn-danger btn-sm" style="padding:0.3rem 0.5rem" onclick="this.closest('li').remove()">✕</button>`;
+  list.appendChild(li);
+  toast('✅', 'Menü öğesi eklendi');
+}
+
+// ═══════════════════════════════════
+// USERS / RBAC
+// ═══════════════════════════════════
+function filterUsers(q) {
+  document.querySelectorAll('#users-tbody tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+  });
+}
+function filterRole(btn, role) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#users-tbody tr').forEach(r => {
+    r.style.display = (role === 'all' || r.dataset.role === role) ? '' : 'none';
+  });
+}
+
+// ═══════════════════════════════════
+// MODERATION TABS
+// ═══════════════════════════════════
+function switchModeTab(btn, id) {
+  document.querySelectorAll('#panel-rbac-moderation .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mod-comments').style.display = id === 'comments' ? '' : 'none';
+  document.getElementById('mod-reports').style.display = id === 'reports' ? '' : 'none';
+}
+
+// ═══════════════════════════════════
+// CACHE
+// ═══════════════════════════════════
+function clearCache() {
+  closeModal('modal-cache');
+  toast('🗑', 'Cache temizlendi — 234MB serbest bırakıldı');
+}
+
+// ═══════════════════════════════════
+// LIVE ANALYTICS SIMULATION
+// ═══════════════════════════════════
+setInterval(() => {
+  state.analytics.liveUsers += Math.round((Math.random() - 0.4) * 2);
+  state.analytics.liveUsers = Math.max(3, Math.min(30, state.analytics.liveUsers));
+  const el = document.getElementById('stat-users');
+  if (el) el.textContent = state.analytics.liveUsers;
+  state.analytics.pageViews += Math.floor(Math.random() * 8);
+  const pv = document.getElementById('pv-count');
+  if (pv) pv.textContent = state.analytics.pageViews.toLocaleString('tr-TR');
+}, 3000);
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+setupDrag('nav-list');
+setupDrag('footer-list');
+</script>
+</body>
+</html>
