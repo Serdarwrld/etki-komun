@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Etki Komün — Kontrol Merkezi v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Lato:wght@300;400;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Serif+Display:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Italiana&family=Cinzel:wght@400;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300;1,8..60,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Nunito:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════════
    RESET & TOKENS
@@ -507,7 +507,7 @@ input,textarea,select{font-family:inherit}
         <div class="log-item"><span class="log-lvl log-err">ERR</span><span class="log-msg">POST /api/upload — 413 Payload Too Large</span><span class="log-time">2dk</span></div>
         <div class="log-item"><span class="log-lvl log-warn">WARN</span><span class="log-msg">Rate limit yaklaşıldı: /api/comments (87/100)</span><span class="log-time">8dk</span></div>
         <div class="log-item"><span class="log-lvl log-info">INFO</span><span class="log-msg">Cache temizlendi — 234MB serbest bırakıldı</span><span class="log-time">1sa</span></div>
-        <div class="log-item"><span class="log-lvl log-info">INFO</span><span class="log-msg">Yeni kullanıcı kaydı: ali.k@example.com</span><span class="log-time">2sa</span></div>
+        <div class="log-item"><span class="log-lvl log-info">INFO</span><span class="log-msg">Yeni kullanıcı kaydı: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="76171a1f581d36130e171b061a135815191b">[email&#160;protected]</a></span><span class="log-time">2sa</span></div>
         <div class="log-item"><span class="log-lvl log-err">ERR</span><span class="log-msg">DB bağlantısı 350ms gecikmeli yanıt verdi</span><span class="log-time">4sa</span></div>
       </div>
     </div>
@@ -697,8 +697,54 @@ input,textarea,select{font-family:inherit}
     <div class="card">
       <div class="card-hd"><div class="card-hd-title">🔤 Font Seçimi</div></div>
       <div class="card-body">
-        <div class="f-row"><label class="f-label">Başlık Fontu (Display)</label><select class="f-select" onchange="updateFontPreview()" id="font-display"><option>Playfair Display</option><option>Syne</option><option>Cormorant Garamond</option><option>DM Serif Display</option><option>Libre Baskerville</option><option>Bodoni Moda</option></select></div>
-        <div class="f-row"><label class="f-label">Gövde Fontu (Body)</label><select class="f-select" id="font-body"><option>Lato</option><option>DM Sans</option><option>Source Serif 4</option><option>Merriweather</option><option>Nunito</option></select></div>
+        <div class="f-row">
+          <label class="f-label">Başlık Fontu (Display)</label>
+          <select class="f-select" onchange="updateFontPreview()" id="font-display">
+            <optgroup label="⭐ Önerilen">
+              <option value="Fraunces" selected>Fraunces — Sıcak, optik, karakterli</option>
+              <option value="Cormorant Garamond">Cormorant Garamond — Klasik zarafet</option>
+            </optgroup>
+            <optgroup label="Serif — Akademik">
+              <option value="EB Garamond">EB Garamond — Tarihi, nefis</option>
+              <option value="Crimson Pro">Crimson Pro — Modern klasik</option>
+              <option value="Spectral">Spectral — Dijital okuma için</option>
+              <option value="Lora">Lora — Sıcak gazete serif</option>
+              <option value="Playfair Display">Playfair Display — Yüksek kontrast</option>
+              <option value="DM Serif Display">DM Serif Display — Minimal serif</option>
+              <option value="Libre Baskerville">Libre Baskerville — Güçlü, okunabilir</option>
+            </optgroup>
+            <optgroup label="Dekoratif — Kimlikli">
+              <option value="Bodoni Moda">Bodoni Moda — İtalyan zarafeti</option>
+              <option value="Italiana">Italiana — İnce, sofistike</option>
+              <option value="Cinzel">Cinzel — Roma harfleri, güçlü</option>
+            </optgroup>
+            <optgroup label="Sans-Serif — Modern">
+              <option value="Syne">Syne — Geometrik, çarpıcı</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="f-row">
+          <label class="f-label">Gövde Fontu (Body)</label>
+          <select class="f-select" onchange="updateFontPreview()" id="font-body">
+            <optgroup label="⭐ Önerilen">
+              <option value="Source Serif 4" selected>Source Serif 4 — Uzun okuma optimizasyonu</option>
+              <option value="Lora">Lora — Sıcak, davetkar serif</option>
+            </optgroup>
+            <optgroup label="Serif — Derin Okuma">
+              <option value="Crimson Pro">Crimson Pro — Akıcı, kompakt</option>
+              <option value="EB Garamond">EB Garamond — Klasik kitap hissi</option>
+              <option value="Spectral">Spectral — Ekran için optimize</option>
+              <option value="Merriweather">Merriweather — Güçlü, belirgin</option>
+              <option value="Cormorant Garamond">Cormorant Garamond — Zarif serif</option>
+            </optgroup>
+            <optgroup label="Sans-Serif — Temiz">
+              <option value="DM Sans">DM Sans — Modern, nötr</option>
+              <option value="Inter">Inter — Dijital standart</option>
+              <option value="Lato">Lato — Sıcak sans-serif</option>
+              <option value="Nunito">Nunito — Yuvarlak, samimi</option>
+            </optgroup>
+          </select>
+        </div>
         <div class="f-row"><label class="f-label">Kod / Mono Fontu</label><select class="f-select"><option>JetBrains Mono</option><option>Fira Code</option><option>Space Mono</option><option>IBM Plex Mono</option></select></div>
         <div class="sep"></div>
         <div class="f-row"><label class="f-label">Temel Font Boyutu (px)</label><input class="f-input" type="number" value="15" min="12" max="20"/></div>
@@ -710,9 +756,9 @@ input,textarea,select{font-family:inherit}
       <div class="card-hd"><div class="card-hd-title">👁 Font Önizleme</div></div>
       <div class="card-body">
         <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;background:var(--bg)">
-          <div id="fp-h1" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--text);margin-bottom:0.5rem">Başlık — H1 Yazı Stili</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text2);margin-bottom:0.75rem">Alt Başlık — H2 Stili</div>
-          <p style="font-family:'Lato',sans-serif;font-size:0.9rem;color:var(--text2);line-height:1.75;margin-bottom:0.75rem">Gövde metni örneği. Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler sunuyoruz. Bu metin normal yazı boyutunda görünüyor.</p>
+          <div id="fp-h1" style="font-family:'Fraunces',serif;font-size:2rem;font-weight:400;color:var(--text);margin-bottom:0.5rem;letter-spacing:-0.01em">Başlık — H1 Yazı Stili</div>
+          <div id="fp-h2" style="font-family:'Fraunces',serif;font-size:1.3rem;font-weight:300;font-style:italic;color:var(--accent);margin-bottom:0.75rem">Alt Başlık — H2 İtalik Stili</div>
+          <p id="fp-body" style="font-family:'Source Serif 4',serif;font-size:0.9rem;color:var(--text2);line-height:1.8;margin-bottom:0.75rem;font-weight:300">Gövde metni örneği. Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler sunuyoruz. Bu metin seçilen gövde fontuyla görünüyor.</p>
           <code style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;background:var(--surface3);padding:0.2rem 0.5rem;border-radius:3px;color:var(--teal2)">const etki = 'komün';</code>
         </div>
         <div class="sep"></div>
@@ -806,11 +852,11 @@ input,textarea,select{font-family:inherit}
       <table class="tbl" id="users-table">
         <thead><tr><th>Kullanıcı</th><th>Rol</th><th>Durum</th><th>Kayıt Tarihi</th><th>Son Giriş</th><th>İşlemler</th></tr></thead>
         <tbody id="users-tbody">
-          <tr data-role="superadmin"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--red),var(--violet))">SA</div><div><div>Süper Admin</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">admin@etkikomun.com</div></div></div></td><td><span class="badge role-superadmin">Super Admin</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">01.01.2025</td><td style="color:var(--text3)">Şimdi</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm">Düzenle</button></div></td></tr>
-          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--teal),var(--blue))">AY</div><div><div>Ayşe Yılmaz</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">ayse@etkikomun.com</div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">15.01.2025</td><td style="color:var(--text3)">2sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
-          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--accent),var(--earth))">MK</div><div><div>Mehmet Kaya</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">mehmet@etkikomun.com</div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">22.01.2025</td><td style="color:var(--text3)">1 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
-          <tr data-role="moderator"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--violet),var(--violet2))">ZD</div><div><div>Zeynep Demir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">zeynep@example.com</div></div></div></td><td><span class="badge role-moderator">Moderatör</span></td><td><span class="badge badge-yellow">Beklemede</span></td><td style="color:var(--text3)">5.02.2025</td><td style="color:var(--text3)">3 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-primary btn-sm" onclick="toast('✅','Kullanıcı onaylandı')">Onayla</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı reddedildi')">Reddet</button></div></td></tr>
-          <tr data-role="user"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--blue),var(--teal))">AK</div><div><div>Ali Karademir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)">ali.k@example.com</div></div></div></td><td><span class="badge role-user">Kullanıcı</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">10.02.2025</td><td style="color:var(--text3)">5sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+          <tr data-role="superadmin"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--red),var(--violet))">SA</div><div><div>Süper Admin</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="9ffefbf2f6f1dffaebf4f6f4f0f2eaf1b1fcf0f2">[email&#160;protected]</a></div></div></div></td><td><span class="badge role-superadmin">Super Admin</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">01.01.2025</td><td style="color:var(--text3)">Şimdi</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm">Düzenle</button></div></td></tr>
+          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--teal),var(--blue))">AY</div><div><div>Ayşe Yılmaz</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a4b53594f6a4f5e41434145475f4404494547">[email&#160;protected]</a></div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">15.01.2025</td><td style="color:var(--text3)">2sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+          <tr data-role="editor"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--accent),var(--earth))">MK</div><div><div>Mehmet Kaya</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5d3038353038291d382936343632302833733e3230">[email&#160;protected]</a></div></div></div></td><td><span class="badge role-editor">Editör</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">22.01.2025</td><td style="color:var(--text3)">1 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
+          <tr data-role="moderator"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--violet),var(--violet2))">ZD</div><div><div>Zeynep Demir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="077d627e69627747627f666a776b622964686a">[email&#160;protected]</a></div></div></div></td><td><span class="badge role-moderator">Moderatör</span></td><td><span class="badge badge-yellow">Beklemede</span></td><td style="color:var(--text3)">5.02.2025</td><td style="color:var(--text3)">3 gün önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-primary btn-sm" onclick="toast('✅','Kullanıcı onaylandı')">Onayla</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı reddedildi')">Reddet</button></div></td></tr>
+          <tr data-role="user"><td class="bold"><div style="display:flex;align-items:center;gap:0.65rem"><div class="avatar av-32" style="background:linear-gradient(135deg,var(--blue),var(--teal))">AK</div><div><div>Ali Karademir</div><div style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a7b767334715a7f627b776a767f34797577">[email&#160;protected]</a></div></div></div></td><td><span class="badge role-user">Kullanıcı</span></td><td><span class="badge badge-green">Aktif</span></td><td style="color:var(--text3)">10.02.2025</td><td style="color:var(--text3)">5sa önce</td><td><div style="display:flex;gap:0.35rem"><button class="btn btn-violet btn-sm" onclick="openModal('modal-edit-user')">Düzenle</button><button class="btn btn-danger btn-sm" onclick="toast('🚫','Kullanıcı banlandı')">Ban</button></div></td></tr>
         </tbody>
       </table>
     </div>
@@ -1088,12 +1134,12 @@ input,textarea,select{font-family:inherit}
   <div class="pg-header"><div><div class="pg-title">Hata Logları & İzleme</div><div class="pg-sub">Sistem olayları ve hata takibi</div></div><div class="btn-row"><select class="f-select" style="width:auto;padding:0.4rem 0.75rem"><option>Tüm Seviyeler</option><option>ERROR</option><option>WARN</option><option>INFO</option></select><button class="btn btn-danger btn-sm" onclick="toast('🗑','Loglar temizlendi')">Logları Temizle</button></div></div>
   <div class="card">
     <div class="card-body" style="padding:0.75rem 1.25rem">
-      <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">POST /api/upload — 413 Payload Too Large<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">at multer/lib/make-error.js:22 · User: mehmet@etkikomun.com</span></div><span class="log-time">14:22</span></div>
+      <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">POST /api/upload — 413 Payload Too Large<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">at multer/lib/make-error.js:22 · User: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="38555d50555d4c785d4c53515357554d56165b5755">[email&#160;protected]</a></span></div><span class="log-time">14:22</span></div>
       <div class="log-item"><span class="log-lvl log-warn">WARN</span><div class="log-msg">Rate limit threshold reached: /api/comments (87/100 req/min)<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">IP: 185.20.14.200 · Auto-throttling aktif</span></div><span class="log-time">14:18</span></div>
       <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">DB connection timeout: Query exceeded 3000ms<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Query: SELECT * FROM posts WHERE category=? ORDER BY… · Retried: 2x</span></div><span class="log-time">13:55</span></div>
-      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">Cache cleared successfully — 234MB freed<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Redis · Triggered by: admin@etkikomun.com</span></div><span class="log-time">13:30</span></div>
+      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">Cache cleared successfully — 234MB freed<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Redis · Triggered by: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="81e0e5ece8efc1e4f5eae8eaeeecf4efafe2eeec">[email&#160;protected]</a></span></div><span class="log-time">13:30</span></div>
       <div class="log-item"><span class="log-lvl log-warn">WARN</span><div class="log-msg">Spam comment detected and quarantined<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Post ID: #47 · Score: 0.94 · Model: akismet-v3</span></div><span class="log-time">12:44</span></div>
-      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">New user registration: ali.k@example.com<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Role: user · IP: 78.162.44.20 · Email verified: false</span></div><span class="log-time">11:12</span></div>
+      <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">New user registration: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="89e8e5e0a7e2c9ecf1e8e4f9e5eca7eae6e4">[email&#160;protected]</a><br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Role: user · IP: 78.162.44.20 · Email verified: false</span></div><span class="log-time">11:12</span></div>
       <div class="log-item"><span class="log-lvl log-err">ERR</span><div class="log-msg">SendGrid API: 429 Too Many Requests<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Email queue paused · Retry in 60s · Queue: 12 pending</span></div><span class="log-time">10:08</span></div>
       <div class="log-item"><span class="log-lvl log-info">INFO</span><div class="log-msg">Post published: "Özgür İrade Yanılsaması" (ID: #52)<br><span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--text4)">Author: Ayşe Yılmaz · Category: Felsefe · Cache busted</span></div><span class="log-time">09:30</span></div>
     </div>
@@ -1415,7 +1461,7 @@ if (!can('posts.publish'))
   <span class="toast-close" onclick="document.getElementById('toast-el').classList.remove('show')">✕</span>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════
 // STATE MANAGEMENT (Mini Store)
 // ═══════════════════════════════════
@@ -1650,31 +1696,77 @@ function switchModeTab(btn, id) {
 }
 
 // ═══════════════════════════════════
-// CACHE
+// FONT PREVIEW
 // ═══════════════════════════════════
-function clearCache() {
+function updateFontPreview() {
+  const displayFont = document.getElementById('font-display')?.value || 'Fraunces';
+  const bodyFont = document.getElementById('font-body')?.value || 'Source Serif 4';
+  const h1 = document.getElementById('fp-h1');
+  const h2 = document.getElementById('fp-h2');
+  const body = document.getElementById('fp-body');
+  if (h1) h1.style.fontFamily = "'" + displayFont + "', serif";
+  if (h2) h2.style.fontFamily = "'" + displayFont + "', serif";
+  if (body) body.style.fontFamily = "'" + bodyFont + "', serif, sans-serif";
+  toast('Ⓣ', displayFont + ' + ' + bodyFont);
+}
+
+// ═══════════════════════════════════
+// CACHE
+
+function clearCache(btn) {
+  openModal('modal-cache');
+}
+function confirmClear() {
   closeModal('modal-cache');
   toast('🗑', 'Cache temizlendi — 234MB serbest bırakıldı');
 }
 
 // ═══════════════════════════════════
-// LIVE ANALYTICS SIMULATION
+// ANALYTICS CHART
 // ═══════════════════════════════════
-setInterval(() => {
-  state.analytics.liveUsers += Math.round((Math.random() - 0.4) * 2);
-  state.analytics.liveUsers = Math.max(3, Math.min(30, state.analytics.liveUsers));
-  const el = document.getElementById('stat-users');
-  if (el) el.textContent = state.analytics.liveUsers;
-  state.analytics.pageViews += Math.floor(Math.random() * 8);
-  const pv = document.getElementById('pv-count');
-  if (pv) pv.textContent = state.analytics.pageViews.toLocaleString('tr-TR');
-}, 3000);
+(function() {
+  const canvas = document.getElementById('perf-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const data = [98, 142, 118, 287, 1240, 34];
+  const labels = ['Ana Sayfa','Blog','Yazı','Yorum','Medya','DB'];
+  const W = canvas.width, H = canvas.height;
+  const max = Math.max(...data);
+  const barW = W / data.length - 10;
+  ctx.clearRect(0, 0, W, H);
+  data.forEach((v, i) => {
+    const x = i * (barW + 10) + 5;
+    const barH = (v / max) * (H - 30);
+    const y = H - barH - 20;
+    const color = v > 500 ? '#ef4444' : v > 200 ? '#f59e0b' : '#10b981';
+    ctx.fillStyle = color + '33';
+    ctx.fillRect(x, y, barW, barH);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y + barH - 3, barW, 3);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '9px monospace';
+    ctx.fillText(v + 'ms', x + 2, y - 4);
+  });
+})();
 
-// ═══════════════════════════════════
-// INIT
-// ═══════════════════════════════════
-setupDrag('nav-list');
-setupDrag('footer-list');
+(function() {
+  const canvas = document.getElementById('traffic-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const data = [1200,1450,980,1800,2100,1600,2847];
+  const W = canvas.width, H = canvas.height;
+  const max = Math.max(...data);
+  ctx.clearRect(0,0,W,H);
+  ctx.beginPath();
+  data.forEach((v,i) => {
+    const x = (i/(data.length-1))*W;
+    const y = H - (v/max)*(H-20) - 10;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = 'var(--accent)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+})();
 </script>
 </body>
 </html>
