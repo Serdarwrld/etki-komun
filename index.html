@@ -43,7 +43,7 @@
       border-bottom: 1px solid var(--border);
     }
     .nav-logo { font-family: var(--font-display); font-size: 1.45rem; font-weight: 400; color: var(--cream); text-decoration: none; }
-    .nav-logo span { color: var(--gold); font-style: italic; }
+    .nav-logo span { color: var(--gold); }
     .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); display: inline-block; margin-left: 10px; vertical-align: middle; }
     .nav-links { display: flex; gap: 2.5rem; list-style: none; }
     .nav-links a { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
@@ -62,7 +62,7 @@
     .hero-eyebrow { font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--teal-light); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
     .hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--teal-light); }
     .hero-title { font-family: var(--font-display); font-size: clamp(3.5rem,6vw,5.5rem); font-weight: 300; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 0.3rem; color: var(--cream); }
-    .hero-title em { font-style: italic; color: var(--gold-light); }
+    .hero-title em { font-style: normal; color: var(--gold-light); }
     .hero-title .accent-line { display: block; -webkit-text-stroke: 2px var(--teal); color: transparent; }
     .hero-subtitle { font-family: var(--font-body); font-size: 1.05rem; line-height: 1.8; color: var(--cream2); max-width: 480px; margin: 1.8rem 0 2.5rem; font-weight: 300; }
     .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -90,7 +90,7 @@
     .section-tag { font-family: var(--font-ui); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal-light); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; }
     .section-tag::before { content: ''; width: 24px; height: 1px; background: var(--teal-light); }
     .section-title { font-family: var(--font-display); font-size: clamp(2.2rem,4vw,3.2rem); font-weight: 300; line-height: 1.15; letter-spacing: -0.02em; color: var(--cream); }
-    .section-title em { font-style: italic; color: var(--gold-light); }
+    .section-title em { font-style: normal; color: var(--gold-light); }
 
     /* ABOUT */
     #about { background: var(--surface); display: grid; grid-template-columns: 1fr 1.2fr; gap: 5rem; align-items: center; }
@@ -160,7 +160,7 @@
     /* FOOTER */
     footer { background: var(--card); padding: 3rem 4rem; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
     .footer-logo { font-family: var(--font-display); font-size: 1.2rem; font-weight: 300; color: var(--cream); }
-    .footer-logo span { color: var(--gold); font-style: italic; }
+    .footer-logo span { color: var(--gold); }
     .footer-copy { font-size: 0.72rem; color: var(--muted); }
     .footer-socials { display: flex; gap: 1.2rem; }
     .footer-socials a { width: 36px; height: 36px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--muted); text-decoration: none; transition: border-color 0.2s, color 0.2s; }
@@ -214,7 +214,7 @@
     <div class="hero-content">
       <p class="hero-eyebrow">Düşüncenin Buluşma Noktası</p>
       <h1 class="hero-title">
-        <em>Etki</em><br>
+        Etki<br>
         <span class="accent-line">Komün</span>
       </h1>
       <p class="hero-subtitle">Bilim, felsefe, sanat ve politika üzerine bağımsız düşünceler. Hayatın her katmanına dair derinlemesine analizler, sorular ve tartışmalar.</p>
@@ -252,7 +252,7 @@
   <section id="about">
     <div class="reveal">
       <p class="section-tag">Biz Kimiz</p>
-      <h2 class="section-title">Bağımsız Sesler,<br><em>Cesur Fikirler</em></h2>
+      <h2 class="section-title">Bağımsız Sesler,<br><span style="color:var(--gold-light)">Cesur Fikirler</span></h2>
       <p class="about-body">
         <strong>Etki Komün</strong>, ideolojik körlüğe direnen, merak etmeyi seven bir yazarlar topluluğudur.
         Bilimin metodolojisinden felsefenin derinliklerine, sanatın dönüştürücü gücünden politikanın
@@ -272,7 +272,7 @@
     <div class="topics-header">
       <div class="reveal">
         <p class="section-tag">Konu Alanları</p>
-        <h2 class="section-title">Neyi <em>Tartışıyoruz?</em></h2>
+        <h2 class="section-title">Neyi <span style="color:var(--gold-light)">Tartışıyoruz?</span></h2>
       </div>
       <a href="#posts" class="btn-ghost reveal" style="white-space:nowrap;transition-delay:0.1s">Tüm Yazılar →</a>
     </div>
@@ -286,7 +286,7 @@
 
   <section id="posts">
     <p class="section-tag reveal">Öne Çıkanlar</p>
-    <h2 class="section-title reveal">Son <em>Yazılar</em></h2>
+    <h2 class="section-title reveal">Son <span style="color:var(--gold-light)">Yazılar</span></h2>
     <div class="posts-grid">
       <div class="post-card featured reveal">
         <div class="post-img"><div class="post-img-bg" style="background:linear-gradient(135deg,#3d3580 0%,#6b5cc4 40%,#2a7f6f 100%);"></div></div>
@@ -319,12 +319,12 @@
   <section id="contact">
     <div class="reveal">
       <p class="section-tag">İletişim</p>
-      <h2 class="section-title">Bize Ulaşın,<br><em>Tartışmaya Katılın</em></h2>
+      <h2 class="section-title">Bize Ulaşın,<br><span style="color:var(--gold-light)">Tartışmaya Katılın</span></h2>
       <p class="contact-sub">Düşüncelerinizi paylaşmak, katkıda bulunmak ya da sadece merhaba demek için kapımız her zaman açık.</p>
       <div class="contact-links">
-        <a href="mailto:iletisim@etkikomun.com" class="contact-link-item">
+        <a href="/cdn-cgi/l/email-protection#c7aeaba2b3aeb4aeaa87a2b3acaeaca8aab2a9e9a4a8aa" class="contact-link-item">
           <div class="contact-link-icon">✉</div>
-          <div class="contact-link-info"><strong>E-posta</strong><span>iletisim@etkikomun.com</span></div>
+          <div class="contact-link-info"><strong>E-posta</strong><span><span class="__cf_email__" data-cfemail="224b4e47564b514b4f624756494b494d4f574c0c414d4f">[email&#160;protected]</span></span></div>
         </a>
         <a href="#" class="contact-link-item">
           <div class="contact-link-icon">𝕏</div>
@@ -354,17 +354,10 @@
     </div>
   </footer>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
         if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
       });
     }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    window.addEventListener('scroll', () => {
-      document.querySelector('nav').style.borderBottomColor = window.scrollY > 50 ? 'var(--border)' : 'transparent';
-    });
-  </script>
-</body>
-</html>
+    document.querySelectorAll
